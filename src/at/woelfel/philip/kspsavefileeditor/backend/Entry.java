@@ -1,4 +1,4 @@
-package at.woelfel.philip.kspsavefileeditor.gui;
+package at.woelfel.philip.kspsavefileeditor.backend;
 
 public class Entry {
 
@@ -17,29 +17,34 @@ public class Entry {
 	/**
 	 * @return the mKey
 	 */
-	public String getmKey() {
+	public String getKey() {
 		return mKey;
 	}
 
 	/**
 	 * @param mKey the mKey to set
 	 */
-	public void setmKey(String mKey) {
+	public void setKey(String mKey) {
 		this.mKey = mKey;
 	}
 
 	/**
 	 * @return the mValue
 	 */
-	public String getmValue() {
+	public String getValue() {
 		return mValue;
 	}
 
 	/**
 	 * @param mValue the mValue to set
 	 */
-	public void setmValue(String mValue) {
+	public void setValue(String mValue) {
 		this.mValue = mValue;
+	}
+	
+	@Override
+	public String toString() {
+		return mKey +" = " +mValue;
 	}
 	
 }
