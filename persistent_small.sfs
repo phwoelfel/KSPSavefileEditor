@@ -1,0 +1,838 @@
+GAME
+{
+	version = 0.23.5
+	Title = careerv2 (CAREER)
+	Description = No description available.
+	linkURL = 
+	linkCaption = 
+	Mode = 1
+	Status = 1
+	scene = 5
+	flag = Squad/Flags/at_flag
+	PARAMETERS
+	{
+		FLIGHT
+		{
+			CanQuickSave = True
+			CanQuickLoad = True
+			CanAutoSave = True
+			CanUseMap = True
+			CanSwitchVesselsNear = True
+			CanSwitchVesselsFar = True
+			CanTimeWarpHigh = True
+			CanTimeWarpLow = True
+			CanEVA = True
+			CanIVA = True
+			CanBoard = True
+			CanRestart = True
+			CanLeaveToEditor = True
+			CanLeaveToTrackingStation = True
+			CanLeaveToSpaceCenter = True
+			CanLeaveToMainMenu = False
+		}
+		EDITOR
+		{
+			CanSave = True
+			CanLoad = True
+			CanStartNew = True
+			CanLaunch = True
+			CanLeaveToSpaceCenter = True
+			CanLeaveToMainMenu = False
+			startUpMode = 0
+			craftFileToLoad = 
+		}
+		TRACKINGSTATION
+		{
+			CanFlyVessel = True
+			CanAbortVessel = True
+			CanLeaveToSpaceCenter = True
+			CanLeaveToMainMenu = False
+		}
+		SPACECENTER
+		{
+			CanGoInVAB = True
+			CanGoInSPH = True
+			CanGoInTrackingStation = True
+			CanLaunchAtPad = True
+			CanLaunchAtRunway = True
+			CanLeaveToMainMenu = True
+		}
+		DIFFICULTY
+		{
+			MissingCrewsRespawn = True
+			AllowStockVessels = False
+		}
+	}
+	SCENARIO
+	{
+		name = ScenarioDiscoverableObjects
+		scene = 7, 8, 5
+		 = 203231097
+		sizeCurve
+		{
+			key = 0 0 1.5 1.5
+			key = 0.3 0.45 0.875 0.875
+			key = 0.7 0.55 0.875 0.875
+			key = 1 1 1.5 1.5
+		}
+	}
+	SCENARIO
+	{
+		name = ProgressTracking
+		scene = 7, 8, 5
+		Progress
+		{
+			FirstLaunch
+			{
+				completed = 8.8199999999999
+			}
+			FirstCrewToSurvive
+			{
+				completed = 271.342636718767
+				crew
+				{
+					crews = 0
+				}
+			}
+			Sun
+			{
+				reached = 4.93999999999998
+				Orbit
+				{
+					completed = 4.93999999999998
+					vessel
+					{
+						name = Ast. HSJ-227
+						flag = 
+					}
+				}
+			}
+			Kerbin
+			{
+				reached = 238.322636718772
+				Landing
+				{
+					completed = 238.322636718772
+					vessel
+					{
+						name = First Launch
+						flag = Squad/Flags/at_flag
+					}
+					crew
+					{
+						crews = 0
+					}
+				}
+				SurfaceEVA
+				{
+					completed = 244.662636718775
+					crew
+					{
+						crews = 0
+					}
+				}
+				ReturnFromSurface
+				{
+					completed = 244.922636718775
+					vessel
+					{
+						name = First Launch
+						flag = Squad/Flags/at_flag
+					}
+				}
+			}
+		}
+	}
+	SCENARIO
+	{
+		name = ResearchAndDevelopment
+		scene = 7, 8, 5, 6, 9
+		sci = 3.1
+		Tech
+		{
+			id = start
+			state = Available
+			part = Engineer7500
+			part = EngineerChip
+			part = EngineerChipFlight
+			part = hc.booster
+			part = hc.launchcam
+			part = hc.navcam
+			part = hc.scicam
+			part = KSO.KerbaLab
+			part = mk1pod
+			part = liquidEngine
+			part = solidBooster
+			part = fuelTankSmall
+			part = trussPiece1x
+			part = longAntenna
+			part = parachuteSingle
+		}
+		Tech
+		{
+			id = basicRocketry
+			state = Available
+			part = kb-fuel-breaker1
+			part = km.smart.fuel
+			part = fuelTank
+			part = fuelTankSmallFlat
+			part = GooExperiment
+			part = stackDecoupler
+		}
+		Tech
+		{
+			id = stability
+			state = Available
+			part = noseCone
+			part = winglet
+			part = radialDecoupler
+		}
+		Science
+		{
+			id = crewReport@KerbinSrfLandedLaunchPad
+			title = Crew Report from LaunchPad
+			dsc = 1
+			scv = 1
+			sbv = 0.3
+			sci = 0
+			cap = 1.5
+		}
+		Science
+		{
+			id = evaReport@KerbinSrfLandedLaunchPad
+			title = EVA Report from LaunchPad
+			dsc = 1
+			scv = 1
+			sbv = 0.3
+			sci = 0
+			cap = 2.4
+		}
+		Science
+		{
+			id = crewReport@KerbinFlyingLowShores
+			title = Crew Report while flying over Kerbin's Shores
+			dsc = 1
+			scv = 0
+			sbv = 0.7
+			sci = 3.5
+			cap = 3.5
+		}
+		Science
+		{
+			id = evaReport@KerbinFlyingLowShores
+			title = EVA Report while flying over Kerbin's Shores
+			dsc = 1
+			scv = 0
+			sbv = 0.7
+			sci = 5.6
+			cap = 5.6
+		}
+		Science
+		{
+			id = crewReport@KerbinSrfLandedShores
+			title = Crew Report from Kerbin's Shores
+			dsc = 1
+			scv = 0.6
+			sbv = 0.3
+			sci = 0.6
+			cap = 1.5
+		}
+		Science
+		{
+			id = evaReport@KerbinSrfLandedShores
+			title = EVA Report from Kerbin's Shores
+			dsc = 1
+			scv = 0
+			sbv = 0.3
+			sci = 2.4
+			cap = 2.4
+		}
+		Science
+		{
+			id = surfaceSample@KerbinSrfLandedShores
+			title = Surface Sample from Kerbin's Shores
+			dsc = 1
+			scv = 0.25
+			sbv = 0.3
+			sci = 9
+			cap = 12
+		}
+		Science
+		{
+			id = recovery@KerbinFlew
+			title = Recovery of a vessel that survived a flight.
+			dsc = 1
+			scv = 0.1666667
+			sbv = 5
+			sci = 5
+			cap = 6
+		}
+	}
+	FLIGHTSTATE
+	{
+		version = 0.23.5
+		UT = 276.402636718762
+		activeVessel = 0
+		VESSEL
+		{
+			pid = 36863eaab8514f4198d9b84c394ac534
+			name = Ast. HSJ-227
+			type = SpaceObject
+			sit = ORBITING
+			landed = False
+			landedAt = 
+			splashed = False
+			met = 0.06
+			lct = 0.06
+			root = 0
+			lat = 0.864383207662326
+			lon = 179.547992082515
+			alt = 13352512623.8457
+			hgt = -1
+			nrm = 0,1,0
+			rot = -0.2984336,0.402898,-0.8173988,0.283672
+			CoM = 0,0,0
+			stg = 0
+			prst = False
+			ref = 0
+			ORBIT
+			{
+				SMA = 13739267305.1888
+				ECC = 0.0132543173479853
+				INC = 0.89891418797151
+				LPE = 153.071800000919
+				LAN = 73.6143264891098
+				MNA = 0.570509506939198
+				EPH = 2043585.79608398
+				REF = 0
+			}
+			PART
+			{
+				name = PotatoRoid
+				uid = 559298752
+				mid = 559298752
+				parent = 0
+				position = 0,0,0
+				rotation = 0,0,0,1
+				mirror = 1,1,1
+				istg = 0
+				dstg = 0
+				sqor = 0
+				sidx = 0
+				attm = 0
+				srfN = None, -1
+				mass = 150
+				temp = 0
+				expt = 0.1
+				state = 1
+				connected = True
+				attached = True
+				flag = 
+				rTrf = 
+			}
+			ACTIONGROUPS
+			{
+			}
+			DISCOVERY
+			{
+				state = 1
+				lastObservedTime = 0.06
+				lifetime = 1717762.28027344
+				refTime = 1728000
+				size = 2
+			}
+			FLIGHTPLAN
+			{
+			}
+			CTRLSTATE
+			{
+			}
+		}
+		VESSEL
+		{
+			pid = 62ae8855fd2c41d9bb85f20d5fd711cf
+			name = Ast. XUC-428
+			type = SpaceObject
+			sit = ORBITING
+			landed = False
+			landedAt = 
+			splashed = False
+			met = 3.4
+			lct = 3.4
+			root = 0
+			lat = -0.293036319338696
+			lon = 179.718129873287
+			alt = 13497447687.2744
+			hgt = -1
+			nrm = 0,1,0
+			rot = 0.3234102,-0.4067379,0.8225092,0.23119
+			CoM = 0,0,0
+			stg = 0
+			prst = False
+			ref = 0
+			ORBIT
+			{
+				SMA = 13833402120.9971
+				ECC = 0.0162507552952959
+				INC = 0.400273171655968
+				LPE = 298.628788593041
+				LAN = 312.659463239859
+				MNA = 0.450284822844921
+				EPH = 2507449.103125
+				REF = 0
+			}
+			PART
+			{
+				name = PotatoRoid
+				uid = 1245471819
+				mid = 1245471819
+				parent = 0
+				position = 0,0,0
+				rotation = 0,0,0,1
+				mirror = 1,1,1
+				istg = 0
+				dstg = 0
+				sqor = 0
+				sidx = 0
+				attm = 0
+				srfN = None, -1
+				mass = 150
+				temp = 0
+				expt = 0.1
+				state = 1
+				connected = True
+				attached = True
+				flag = 
+				rTrf = 
+			}
+			ACTIONGROUPS
+			{
+			}
+			DISCOVERY
+			{
+				state = 1
+				lastObservedTime = 3.4
+				lifetime = 456618.13659668
+				refTime = 1728000
+				size = 2
+			}
+			FLIGHTPLAN
+			{
+			}
+			CTRLSTATE
+			{
+			}
+		}
+		VESSEL
+		{
+			pid = 037f78fcbd1c4c68a966f4011373f696
+			name = Ast. FCL-043
+			type = SpaceObject
+			sit = ORBITING
+			landed = False
+			landedAt = 
+			splashed = False
+			met = 64.438417968753
+			lct = 64.438417968753
+			root = 0
+			lat = -0.0318914886250363
+			lon = -162.569214201503
+			alt = 14923073732.6926
+			hgt = -1
+			nrm = 0,1,0
+			rot = 0.5319053,0.1758747,0.6183996,0.5511142
+			CoM = 0,0,0
+			stg = 0
+			prst = False
+			ref = 0
+			ORBIT
+			{
+				SMA = 14354261877.0792
+				ECC = 0.0582628484457407
+				INC = 0.179810968216855
+				LPE = 16.6454168528754
+				LAN = 7.26842477872798
+				MNA = 5.77354772835068
+				EPH = 4380420.90814453
+				REF = 0
+			}
+			PART
+			{
+				name = PotatoRoid
+				uid = 1502376765
+				mid = 1502376765
+				parent = 0
+				position = 0,0,0
+				rotation = 0,0,0,1
+				mirror = 1,1,1
+				istg = 0
+				dstg = 0
+				sqor = 0
+				sidx = 0
+				attm = 0
+				srfN = None, -1
+				mass = 150
+				temp = 0
+				expt = 0.1
+				state = 1
+				connected = True
+				attached = True
+				flag = 
+				rTrf = 
+			}
+			ACTIONGROUPS
+			{
+			}
+			DISCOVERY
+			{
+				state = 1
+				lastObservedTime = 64.438417968753
+				lifetime = 1460825.0793457
+				refTime = 1728000
+				size = 2
+			}
+			FLIGHTPLAN
+			{
+			}
+			CTRLSTATE
+			{
+			}
+		}
+		VESSEL
+		{
+			pid = 8d4e2a973b084837bb664302d12feb26
+			name = Ast. SRM-786
+			type = SpaceObject
+			sit = ORBITING
+			landed = False
+			landedAt = 
+			splashed = False
+			met = 90.9058789062505
+			lct = 90.9058789062505
+			root = 0
+			lat = 0.000709643298575136
+			lon = 181.517411466318
+			alt = 14109692400.4546
+			hgt = -1
+			nrm = 0,1,0
+			rot = 0.5687675,0.4472599,-0.6490666,0.2348928
+			CoM = 0,0,0
+			stg = 0
+			prst = False
+			ref = 0
+			ORBIT
+			{
+				SMA = 14314199128.4484
+				ECC = 0.0477828427298805
+				INC = 0.156110259855579
+				LPE = 277.251575673907
+				LAN = 1.85361869311231
+				MNA = 0.13179993515106
+				EPH = 2749962.46349609
+				REF = 0
+			}
+			PART
+			{
+				name = PotatoRoid
+				uid = 1639966199
+				mid = 1639966199
+				parent = 0
+				position = 0,0,0
+				rotation = 0,0,0,1
+				mirror = 1,1,1
+				istg = 0
+				dstg = 0
+				sqor = 0
+				sidx = 0
+				attm = 0
+				srfN = None, -1
+				mass = 150
+				temp = 0
+				expt = 0.1
+				state = 1
+				connected = True
+				attached = True
+				flag = 
+				rTrf = 
+			}
+			ACTIONGROUPS
+			{
+			}
+			DISCOVERY
+			{
+				state = 1
+				lastObservedTime = 90.9058789062505
+				lifetime = 603438.835144043
+				refTime = 1728000
+				size = 3
+			}
+			FLIGHTPLAN
+			{
+			}
+			CTRLSTATE
+			{
+			}
+		}
+		VESSEL
+		{
+			pid = 7821842962e44936be0e113e669f5d64
+			name = Ast. AXN-147
+			type = SpaceObject
+			sit = ORBITING
+			landed = False
+			landedAt = 
+			splashed = False
+			met = 98.5058789062503
+			lct = 98.5058789062503
+			root = 0
+			lat = 0.0927812234928532
+			lon = -164.705436191998
+			alt = 15470813735.8777
+			hgt = -1
+			nrm = 0,1,0
+			rot = -0.8303871,0.2750886,-0.146207,0.4619601
+			CoM = 0,0,0
+			stg = 0
+			prst = False
+			ref = 0
+			ORBIT
+			{
+				SMA = 14757049862.4419
+				ECC = 0.075069607110735
+				INC = 0.152886792777738
+				LPE = 191.035917583041
+				LAN = 158.013752526162
+				MNA = 6.19930205755872
+				EPH = 4185835.46876953
+				REF = 0
+			}
+			PART
+			{
+				name = PotatoRoid
+				uid = 1700205709
+				mid = 1700205709
+				parent = 0
+				position = 0,0,0
+				rotation = 0,0,0,1
+				mirror = 1,1,1
+				istg = 0
+				dstg = 0
+				sqor = 0
+				sidx = 0
+				attm = 0
+				srfN = None, -1
+				mass = 150
+				temp = 0
+				expt = 0.1
+				state = 1
+				connected = True
+				attached = True
+				flag = 
+				rTrf = 
+			}
+			ACTIONGROUPS
+			{
+			}
+			DISCOVERY
+			{
+				state = 1
+				lastObservedTime = 98.5058789062503
+				lifetime = 499029.634094238
+				refTime = 1728000
+				size = 4
+			}
+			FLIGHTPLAN
+			{
+			}
+			CTRLSTATE
+			{
+			}
+		}
+		VESSEL
+		{
+			pid = 275f35c94a9046b8a6276eaf829f7755
+			name = Ast. TMZ-216
+			type = SpaceObject
+			sit = ORBITING
+			landed = False
+			landedAt = 
+			splashed = False
+			met = 109.94587890625
+			lct = 109.94587890625
+			root = 0
+			lat = -1.30162363972591
+			lon = 178.183892183332
+			alt = 13860598890.5277
+			hgt = -1
+			nrm = 0,1,0
+			rot = -0.7795297,-0.4721791,-0.06136796,0.4069575
+			CoM = 0,0,0
+			stg = 0
+			prst = False
+			ref = 0
+			ORBIT
+			{
+				SMA = 15156077693.1497
+				ECC = 0.0997137864412799
+				INC = 1.47031286007932
+				LPE = 348.870117925535
+				LAN = 240.555078403765
+				MNA = 0.154282375686573
+				EPH = 1549271.85994141
+				REF = 0
+			}
+			PART
+			{
+				name = PotatoRoid
+				uid = 1032256519
+				mid = 1032256519
+				parent = 0
+				position = 0,0,0
+				rotation = 0,0,0,1
+				mirror = 1,1,1
+				istg = 0
+				dstg = 0
+				sqor = 0
+				sidx = 0
+				attm = 0
+				srfN = None, -1
+				mass = 150
+				temp = 0
+				expt = 0.1
+				state = 1
+				connected = True
+				attached = True
+				flag = 
+				rTrf = 
+			}
+			ACTIONGROUPS
+			{
+			}
+			DISCOVERY
+			{
+				state = 1
+				lastObservedTime = 109.94587890625
+				lifetime = 1558775.88500977
+				refTime = 1728000
+				size = 2
+			}
+			FLIGHTPLAN
+			{
+			}
+			CTRLSTATE
+			{
+			}
+		}
+		VESSEL
+		{
+			pid = 8ff1ca8a970845a3b8aca69ac2eae75b
+			name = Ast. FUA-800
+			type = SpaceObject
+			sit = ORBITING
+			landed = False
+			landedAt = 
+			splashed = False
+			met = 113.70587890625
+			lct = 113.70587890625
+			root = 0
+			lat = 0.249455579658941
+			lon = -173.078030933121
+			alt = 16352455407.8401
+			hgt = -1
+			nrm = 0,1,0
+			rot = -0.6862572,-0.4886567,0.470335,0.2627749
+			CoM = 0,0,0
+			stg = 0
+			prst = False
+			ref = 0
+			ORBIT
+			{
+				SMA = 16593657484.3625
+				ECC = 0.180048136538273
+				INC = 0.264456846814685
+				LPE = 171.366242133613
+				LAN = 116.407793668053
+				MNA = 0.0172894584308541
+				EPH = 2793326.65753906
+				REF = 0
+			}
+			PART
+			{
+				name = PotatoRoid
+				uid = 203231097
+				mid = 203231097
+				parent = 0
+				position = 0,0,0
+				rotation = 0,0,0,1
+				mirror = 1,1,1
+				istg = 0
+				dstg = 0
+				sqor = 0
+				sidx = 0
+				attm = 0
+				srfN = None, -1
+				mass = 150
+				temp = 0
+				expt = 0.1
+				state = 1
+				connected = True
+				attached = True
+				flag = 
+				rTrf = 
+			}
+			ACTIONGROUPS
+			{
+			}
+			DISCOVERY
+			{
+				state = 1
+				lastObservedTime = 113.70587890625
+				lifetime = 1480138.22021484
+				refTime = 1728000
+				size = 1
+			}
+			FLIGHTPLAN
+			{
+			}
+			CTRLSTATE
+			{
+			}
+		}
+	}
+	ROSTER
+	{
+		CREW
+		{
+			name = Jebediah Kerman
+			brave = 0.5
+			dumb = 0.5
+			badS = True
+			state = 0
+			ToD = 0
+			idx = 0
+		}
+		CREW
+		{
+			name = Bill Kerman
+			brave = 0.5
+			dumb = 0.8
+			badS = False
+			state = 0
+			ToD = 0
+			idx = -1
+		}
+		CREW
+		{
+			name = Bob Kerman
+			brave = 0.3
+			dumb = 0.1
+			badS = False
+			state = 0
+			ToD = 0
+			idx = -1
+		}
+		APPLICANTS
+		{
+		}
+	}
+}
