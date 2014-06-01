@@ -2,6 +2,7 @@ package at.woelfel.philip.kspsavefileeditor.backend;
 
 public class Entry {
 
+	private Node mParentNode;
 	private String mKey;
 	private String mValue;
 	
@@ -9,7 +10,8 @@ public class Entry {
 		
 	}
 	
-	public Entry(String key, String value){
+	public Entry(Node parentNode, String key, String value){
+		mParentNode = parentNode;
 		mKey = key;
 		mValue = value;
 	}
@@ -45,6 +47,21 @@ public class Entry {
 	@Override
 	public String toString() {
 		return mKey +" = " +mValue;
+	}
+
+	public Node getParentNode() {
+		return mParentNode;
+	}
+
+	public void setParentNode(Node mParentNode) {
+		this.mParentNode = mParentNode;
+	}
+	
+	public boolean hasParentNode(){
+		if(mParentNode!=null){
+			return true;
+		}
+		return false;
 	}
 	
 }
