@@ -1,13 +1,17 @@
 package at.woelfel.philip.kspsavefileeditor.backend;
 
+import java.util.ArrayList;
+
 import javax.swing.table.AbstractTableModel;
 
 public class NodeTableModel extends AbstractTableModel{
 
 	private Node mNode;
 	
-	public NodeTableModel(Node n) {
-		mNode = n;
+	private ArrayList<ChangeListener> mChangeListener;
+	
+	public NodeTableModel() {
+		mChangeListener = new ArrayList<ChangeListener>();
 	}
 	
 
@@ -61,14 +65,20 @@ public class NodeTableModel extends AbstractTableModel{
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		// TODO: cell editing
-		return false;
+		return true;
 		
 	}
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		// TODO: saving cell values
+		Entry e = mNode.getEntry(rowIndex);
+		if(columnIndex == 0){
+			e.setKey(""+aValue);
+		}
+		else if(columnIndex == 1){
+			e.setValue(""+aValue);
+		}
+		fireEntryChanged(e);
 	}
 
 
@@ -81,7 +91,25 @@ public class NodeTableModel extends AbstractTableModel{
 		fireTableDataChanged();
 	}
 	
+	public void addChangeListener(ChangeListener cl){
+		mChangeListener.add(cl);
+	}
 	
+	public void removeChangeListener(ChangeListener cl){
+		mChangeListener.remove(cl);
+	}
+	
+	private void fireEntryChanged(Entry e){
+		for(ChangeListener cl : mChangeListener){
+			cl.onEntryChanged(e);
+		}
+	}
+	
+	private void fireEntryAdded(Entry e){
+		for(ChangeListener cl : mChangeListener){
+			cl.onEntryAdded(e);
+		}
+	}
 
 	
 
