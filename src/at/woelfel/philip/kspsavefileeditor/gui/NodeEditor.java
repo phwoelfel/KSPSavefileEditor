@@ -6,15 +6,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 
 import at.woelfel.philip.kspsavefileeditor.backend.ChangeListener;
+import at.woelfel.philip.kspsavefileeditor.backend.Entry;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 
 public class NodeEditor extends JFrame implements ActionListener {
@@ -22,11 +28,22 @@ public class NodeEditor extends JFrame implements ActionListener {
 	private Node mNode;
 	private Node mParentNode;
 	
+	private EntryEditor mEntryEditor;
+	
 	private JTextField mNameField;
 	private JButton mCancelButton;
 	private JButton mSaveButton;
-	private JList mSubnodeList;
+	
+	private JList mSubNodeList;
+	private NodeListModel mSubNodeListModel;
+	
 	private JList mEntryList;
+	private NodeListModel mEntryListModel;
+	
+	private JButton mNodeEditButton;
+	private JButton mNodeDeleteButton;
+	private JButton mEntryEditButton;
+	private JButton mEntryDeleteButton;
 	
 	private ArrayList<ChangeListener> mChangeListener;
 	
@@ -35,14 +52,14 @@ public class NodeEditor extends JFrame implements ActionListener {
 	private static final int MODE_EDIT=2;
 	
 	
-	public NodeEditor() {
-		
+	public NodeEditor(EntryEditor editor) {
+		mEntryEditor = editor;
 		// TODO: lists for subnodes and entries
 		
 		mChangeListener = new ArrayList<ChangeListener>();
 		
 		setTitle("Node Editor");
-		setSize(400, 150);
+		setSize(350, 300);
 
 		setLayout(new GridBagLayout());
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -50,6 +67,7 @@ public class NodeEditor extends JFrame implements ActionListener {
 		con.setBorder(new TitledBorder("Node"));
 		
 		GridBagConstraints c = new GridBagConstraints();
+		
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -59,22 +77,67 @@ public class NodeEditor extends JFrame implements ActionListener {
 		
 		
 		
-		c.gridx = 0;
-		c.gridy = 1;
-		mNameField = new JTextField(30);
+		c.gridx = 2;
+		c.gridy = 0;
+		mNameField = new JTextField(10);
 		add(mNameField, c);
 		
+		
+		c.gridx = 0;
+		c.gridy = 1;
+		mSubNodeListModel = new NodeListModel(NodeListModel.MODE_SUBNODES);
+		mSubNodeList = new JList(mSubNodeListModel);
+		mSubNodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		add(new JScrollPane(mSubNodeList), c);
+		
+		
+		c.gridx = 2;
+		c.gridy = 1;
+		mEntryListModel = new NodeListModel(NodeListModel.MODE_ENTRIES);
+		mEntryList = new JList(mEntryListModel);
+		mEntryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		add(new JScrollPane(mEntryList), c);
+		
+		
+		c.gridwidth = 2;
+		/*c.gridx = 0;
+		c.gridy = 2;
+		mNodeEditButton = new JButton("Edit", new ImageIcon("img/edit.png"));
+		mNodeEditButton.addActionListener(this);
+		add(mNodeEditButton, c);*/
 		
 		
 		c.gridx = 0;
 		c.gridy = 2;
-		c.gridwidth=1;
+		mNodeDeleteButton = new JButton("Delete", new ImageIcon("img/delete.png"));
+		mNodeDeleteButton.addActionListener(this);
+		add(mNodeDeleteButton, c);
+		
+		
+		c.gridwidth = 1;
+		c.gridx = 2;
+		c.gridy = 2;
+		mEntryEditButton = new JButton("Edit", new ImageIcon("img/edit.png"));
+		mEntryEditButton.addActionListener(this);
+		add(mEntryEditButton, c);
+		
+		
+		c.gridx = 3;
+		c.gridy = 2;
+		mEntryDeleteButton = new JButton("Delete", new ImageIcon("img/delete.png"));
+		mEntryDeleteButton.addActionListener(this);
+		add(mEntryDeleteButton, c);
+		
+		
+		c.gridx = 0;
+		c.gridy = 3;
+		c.gridwidth=2;
 		mCancelButton = new JButton("Cancel");
 		mCancelButton.addActionListener(this);
 		add(mCancelButton, c);
 		
-		c.gridx = 1;
-		c.gridy = 2;
+		c.gridx = 2;
+		c.gridy = 3;
 		mSaveButton = new JButton("Save");
 		mSaveButton.addActionListener(this);
 		add(mSaveButton, c);
@@ -100,6 +163,8 @@ public class NodeEditor extends JFrame implements ActionListener {
 		if(n!=null){
 			mNode = n;
 			mNameField.setText(mNode.getNodeName());
+			mSubNodeListModel.setNode(mNode);
+			mEntryListModel.setNode(mNode);
 		}
 	}
 	@Override
@@ -123,6 +188,34 @@ public class NodeEditor extends JFrame implements ActionListener {
 				setVisible(false);
 			}
 		}
+		else if(e.getSource() == mEntryDeleteButton){
+			if(mEntryList.getSelectedValue() != null){
+				int yesno = JOptionPane.showConfirmDialog(this, "Do you really want to delete this Entry?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if(yesno == JOptionPane.YES_OPTION){
+					Entry entry = (Entry) mEntryList.getSelectedValue();
+					mNode.removeEntry(entry);
+					mEntryListModel.nodeUpdated();
+					fireEntryRemoved(entry);
+				}
+			}
+		}
+		else if(e.getSource() == mEntryEditButton){
+			if(mEntryList.getSelectedValue() != null){
+				Entry entry = (Entry) mEntryList.getSelectedValue();
+				mEntryEditor.showForEdit(entry);
+			}
+		}
+		else if(e.getSource() == mNodeDeleteButton){
+			if(mSubNodeList.getSelectedValue() != null){
+				int yesno = JOptionPane.showConfirmDialog(this, "Do you really want to delete this Node?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if(yesno == JOptionPane.YES_OPTION){
+					Node node = (Node) mSubNodeList.getSelectedValue();
+					mNode.removeSubNode(node);
+					mSubNodeListModel.nodeUpdated();
+					fireNodeRemoved(node);
+				}
+			}
+		}
 		
 	}
 	
@@ -140,9 +233,34 @@ public class NodeEditor extends JFrame implements ActionListener {
 		}
 	}
 	
+	private void fireNodeRemoved(Node n){
+		for(ChangeListener cl : mChangeListener){
+			cl.onNodeRemoved(n);
+		}
+	}
+	
 	private void fireNodeAdded(Node n){
 		for(ChangeListener cl : mChangeListener){
 			cl.onNodeAdded(n);
+		}
+	}
+	
+	private void fireEntryRemoved(Entry e){
+		for(ChangeListener cl : mChangeListener){
+			cl.onEntryRemoved(e);
+		}
+	}
+	
+	
+	private void fireEntryChanged(Entry e){
+		for(ChangeListener cl : mChangeListener){
+			cl.onEntryChanged(e);
+		}
+	}
+	
+	private void fireEntryAdded(Entry e){
+		for(ChangeListener cl : mChangeListener){
+			cl.onEntryAdded(e);
 		}
 	}
 }
