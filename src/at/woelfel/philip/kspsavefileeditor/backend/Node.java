@@ -64,7 +64,7 @@ public class Node {
 	}
 	
 	public void createEntry(String key, String value){
-		Entry e = new Entry(key, value);
+		Entry e = new Entry(this, key, value);
 		addEntry(e);
 	}
 	
