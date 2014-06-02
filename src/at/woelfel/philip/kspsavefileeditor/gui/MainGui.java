@@ -58,22 +58,25 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	
 	public MainGui() {
 		// ################################## Temp Nodes ##################################
-		mRootNode = new Node("Node1", null);
-		mRootNode.createEntry("entry1a", "value1a");
-		mRootNode.createEntry("entry1b", "value1b");
+		mRootNode = new Node("Node 0", null);
+		for(int i=0;i<10;i++){
+			mRootNode.createEntry("entry1" +((char)(97+i)), "value1" +((char)(97+i)));
+		}
+		for(int i=0;i<10;i++){
+			Node subnode = new Node("Node 0"+i, mRootNode);
+			for(int j=0;j<10;j++){
+				subnode.createEntry("entry0"+i+((char)(97+j)), "value0"+i+((char)(97+j)));
+			}
+			mRootNode.addSubNode(subnode);
 		
-		Node node11 = new Node("Node11", mRootNode);
-		node11.createEntry("entry11a", "value11a");
-		mRootNode.addSubNode(node11);
-		
-		Node node111 = new Node("Node111", node11);
-		node111.createEntry("entry111a", "value111a");
-		node11.addSubNode(node111);
-		
-		Node node12 = new Node("Node12", mRootNode);
-		mRootNode.addSubNode(node12);
-		
-		node11.createEntry("entry11b", "value11b");
+			for(int j=0;j<10;j++){
+				Node subsubnode = new Node("Node0"+i+""+j, subnode);
+				for(int k=0;k<10;k++){
+					subsubnode.createEntry("entry0"+i+""+j+((char)(97+k)), "value0"+i+""+j+((char)(97+k)));
+				}
+				subnode.addSubNode(subsubnode);
+			}
+		}
 		
 		
 		// ################################## Window ##################################
@@ -135,13 +138,14 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mEntryEditor = new EntryEditor();
 		mEntryEditor.addChangeListener(this);
 		
-		mNodeEditor = new NodeEditor();
+		mNodeEditor = new NodeEditor(mEntryEditor);
 		mNodeEditor.addChangeListener(this);
 		
 		c.gridx = 0;
 		c.gridy = 1;
 		c.weighty = 0.3;
-		mNodeTableModel = new NodeTableModel(null);
+		mNodeTableModel = new NodeTableModel();
+		mNodeTableModel.addChangeListener(this);
 		mEntryTable = new JTable(mNodeTableModel);
 		JScrollPane entryTableJSP = new JScrollPane(mEntryTable);
 		add(entryTableJSP, c);
@@ -312,12 +316,12 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 
 	@Override
 	public void onEntryChanged(Entry e) {
-		mNodeTreeModel.fireTreeDataChanged(e);
+		mNodeTreeModel.fireTreeStructureChanged(e);
 	}
 
 	@Override
 	public void onNodeChanged(Node n) {
-		mNodeTreeModel.fireTreeDataChanged(n);
+		mNodeTreeModel.fireTreeStructureChanged(n);
 	}
 
 	@Override
