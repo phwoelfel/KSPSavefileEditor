@@ -27,28 +27,17 @@ public class EntryEditor extends JFrame implements ActionListener {
 	private JButton mCancelButton;
 	private JButton mSaveButton;
 	
-	private ArrayList<ChangeListener> mEntryChangeListener;
+	private ArrayList<ChangeListener> mChangeListener;
 	
 	private int mEditorMode;
 	private static final int MODE_NEW=1;
 	private static final int MODE_EDIT=2;
 	
-	/*
-	 * bei MODE_EDIT:
-	 * 		entry values gleich am anfang setzen?
-	 * 		bei cancel einfach nichts tun
-	 * 		bei save einfach in object schreiben (und vllt changelistener?)
-	 * 
-	 * bei MODE_NEW:
-	 * 		bei cancel entry von parent loeschen
-	 * 		bei save entry zu parent hinzufuegen
-	 * 
-	 * 
-	 * zwei konstruktoren?
-	 * 
-	 */
 	
-	public EntryEditor() {		
+	public EntryEditor() {
+		
+		mChangeListener = new ArrayList<ChangeListener>();
+		
 		setTitle("Entry Editor");
 		setSize(400, 150);
 
@@ -128,17 +117,18 @@ public class EntryEditor extends JFrame implements ActionListener {
 			setVisible(false);
 		}
 		else if(e.getSource() == mSaveButton){
-			// TODO: change listener?
 			if(MODE_NEW == mEditorMode){
 				mEntry.setKey(mKeyField.getText());
 				mEntry.setValue(mValueField.getText());
 				mParentNode.addEntry(mEntry);
+				fireEntryAdded(mEntry);
 				
 				setVisible(false);
 			}
 			else if(MODE_EDIT == mEditorMode){
 				mEntry.setKey(mKeyField.getText());
 				mEntry.setValue(mValueField.getText());
+				fireEntryChanged(mEntry);
 				
 				setVisible(false);
 			}
@@ -146,4 +136,23 @@ public class EntryEditor extends JFrame implements ActionListener {
 		
 	}
 	
+	public void addChangeListener(ChangeListener cl){
+		mChangeListener.add(cl);
+	}
+	
+	public void removeChangeListener(ChangeListener cl){
+		mChangeListener.remove(cl);
+	}
+	
+	private void fireEntryChanged(Entry e){
+		for(ChangeListener cl : mChangeListener){
+			cl.onEntryChanged(e);
+		}
+	}
+	
+	private void fireEntryAdded(Entry e){
+		for(ChangeListener cl : mChangeListener){
+			cl.onEntryAdded(e);
+		}
+	}
 }
