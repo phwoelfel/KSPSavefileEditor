@@ -1,7 +1,9 @@
 package at.woelfel.philip.kspsavefileeditor.backend;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -80,9 +82,64 @@ public class NodeTreeModel implements TreeModel {
 	public void removeTreeModelListener(TreeModelListener listener) {
 		mTreeListener.remove(listener);
 	}
+	
+	public void fireTreeDataChanged(Entry e){
+		TreeModelEvent event = getEvent(e);
+		for(TreeModelListener l:mTreeListener){
+			l.treeNodesChanged(event);
+		}
+	}
+	
+	public void fireTreeDataChanged(Node n){
+		TreeModelEvent event= getEvent(n);
+		for(TreeModelListener l:mTreeListener){
+			l.treeNodesChanged(event);
+		}
+	}
+	
+	public void fireTreeStructureChanged(Node n){
+		TreeModelEvent event = getEvent(n);
+		for(TreeModelListener l:mTreeListener){
+			l.treeStructureChanged(event);
+		}
+	}
+	
+	public void fireTreeStructureChanged(Entry e){
+		TreeModelEvent event = getEvent(e);
+		for(TreeModelListener l:mTreeListener){
+			l.treeStructureChanged(event);
+		}
+	}
+	
+	private TreeModelEvent getEvent(Node n){
+		ArrayList<Object> path = new ArrayList<Object>();
+		if(n.hasParent()){
+			n.getParentNode().getPathToRoot(path);
+		}
+		else{
+			n.getPathToRoot(path);
+		}
+		Collections.reverse(path); // we get the path with the root node last
+		
+		return new TreeModelEvent(n, path.toArray());
+	}
+	
+	private TreeModelEvent getEvent(Entry e){
+		ArrayList<Object> path = new ArrayList<Object>();
+		e.getParentNode().getPathToRoot(path);
+		Collections.reverse(path); // we get the path with the root node last
+		
+		return new TreeModelEvent(e, path.toArray());
+	}
+	
+	
+	
 
 	@Override
 	public void valueForPathChanged(TreePath path, Object newValue) {
+		Node editNode = (Node)path.getLastPathComponent(); // should only be node, because leafes can't be edited
+		editNode.setNodeName(""+newValue);
+		fireTreeDataChanged(editNode);
 	}
 
 }
