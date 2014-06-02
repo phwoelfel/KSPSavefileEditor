@@ -123,4 +123,14 @@ public class Node {
 	public String toString() {
 		return mNodeName;
 	}
+	
+	public ArrayList<Object> getPathToRoot(ArrayList<Object> path){
+		path.add(this);
+		if(mParentNode==null){
+			return path;
+		}
+		else{
+			return mParentNode.getPathToRoot(path);
+		}
+	}
 }
