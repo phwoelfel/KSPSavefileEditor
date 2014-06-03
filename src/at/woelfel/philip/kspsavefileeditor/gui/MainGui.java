@@ -50,7 +50,8 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	private JTable mEntryTable;
 	private JTree mNodeTree;
 	
-	private JMenuItem mFileOpenItem;
+	private JMenuItem mFileOpenSFSItem;
+	private JMenuItem mFileOpenOtherItem;
 	private JMenuItem mFileSaveItem;
 	
 	private JMenuItem mAboutInfoItem;
@@ -77,7 +78,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mLogger.setEnabled(false);
 		
 		mFileChooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Savefiles (sfs, txt)", "sfs", "txt");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Save or Craft files (sfs, txt, craft, cfg)", "sfs", "txt", "craft", "cfg");
 		mFileChooser.setFileFilter(filter);
 		
 		// ################################## Temp Nodes ##################################
@@ -114,10 +115,10 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		
 		
 		// ################################## Menu ##################################
-		// TODO: menu images
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
-		mFileOpenItem = initializeMenuItem(fileMenu, "Open...", this, readImage("load.png"));
+		mFileOpenSFSItem = initializeMenuItem(fileMenu, "Open...", this, readImage("load.png"));
+		mFileOpenOtherItem = initializeMenuItem(fileMenu, "Open Craft...", this, readImage("load.png"));
 		mFileSaveItem = initializeMenuItem(fileMenu, "Save...", this, readImage("save.png"));
 		menuBar.add(fileMenu);
 		
@@ -293,15 +294,29 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 				mAboutDebugItem.setText("Disable Debug");
 			}
 		}
-		else if (source == mFileOpenItem) {
+		else if (source == mFileOpenSFSItem) {
 			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = mFileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				mLogger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
 				Parser p = new Parser(mFileChooser.getSelectedFile());
 				try {
-					setRootNode(p.parse());
+					setRootNode(p.parse(true));
 				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(this, "Error parsing file!\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+		else if (source == mFileOpenOtherItem) {
+			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int returnVal = mFileChooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				mLogger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
+				Parser p = new Parser(mFileChooser.getSelectedFile());
+				try {
+					setRootNode(p.parse(false));
+				} catch (Exception e1) {
+					e1.printStackTrace();
 					JOptionPane.showMessageDialog(this, "Error parsing file!\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 			}

@@ -8,14 +8,11 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.SwingUtilities;
-
-import at.woelfel.philip.kspsavefileeditor.gui.ProgressScreen;
-
 public class Parser {
 	private ArrayList<String> mLines;
 	private int mCurrentLine = 0;
 	private int mLineCount;
+
 	
 	private Logger mLogger;
 	
@@ -47,31 +44,38 @@ public class Parser {
 		mLineCount = mLines.size();
 	}
 	
-	public Node parse() throws Exception{
-		//ProgressScreen progressScreen = new ProgressScreen();
-		//ProgressScreen.updateProgressBar(0);
-		
-		long startTime = System.currentTimeMillis();
-		Node n = parseLines(null, 1);
-		long endTime = System.currentTimeMillis();
-		System.out.println("Processing time: "+(endTime-startTime));
-		
-		//progressScreen.setVisible(false);
-		//progressScreen.dispose();
-		
+	public Node parse(boolean hasRootNode) throws Exception{
+		Node n = null;
+		if(hasRootNode){
+			long startTime = System.currentTimeMillis();
+			n = parseLines(null, 1);
+			long endTime = System.currentTimeMillis();
+			System.out.println("Processing time: "+(endTime-startTime));
+		}
+		else{
+			//n = new Node("", null); // create a nameless root node
+			n = parseLines(null, 3); // parse with parent node present --> mode 3
+		}
 		return n;
 	}
 	
 	private synchronized Node parseLines(Node parentNode, int mode) throws Exception{
 		Node currentNode = new Node("", parentNode);
 		for (; mCurrentLine < mLineCount; mCurrentLine++) {
-			if(mCurrentLine%100==0){ // update only every 100 lines
-				//ProgressScreen.updateProgressBar((mCurrentLine*100)/mLineCount);
-			}
+			
 			String line = mLines.get(mCurrentLine).trim();
 			if(line.length()==0){
 				// empty line, skipping
 				continue;
+			}
+			if(line.startsWith("//")){
+				// comment, skipping
+				continue;
+			}
+			if(line.contains("//")){
+				// comment not at the beginning, cut comment
+				line = line.substring(0, line.indexOf("//"));
+				mLogger.log("found comment! new line: " +line);
 			}
 			mLogger.log("current Line(" +mCurrentLine +"): \"" +line +"\" mode: " +mode);
 			if(mode == 1){ // node name
@@ -130,7 +134,7 @@ public class Parser {
 				
 			}
 		}
-		return null;
+		return currentNode;
 	}
 	
 	private boolean isValidName(String line){
