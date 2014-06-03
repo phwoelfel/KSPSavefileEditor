@@ -123,6 +123,11 @@ public class Node {
 	
 	@Override
 	public String toString() {
+		for(Entry e : getEntries()){
+			if("name".equals(e.getKey()) || "part".equals(e.getKey())){
+				return mNodeName +" (" +e.getValue() +")";
+			}
+		}
 		return mNodeName;
 	}
 	
