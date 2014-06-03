@@ -5,8 +5,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -116,7 +118,7 @@ public class NodeEditor extends JFrame implements ActionListener {
 		c.weightx = 1;
 		c.gridx = 0;
 		c.gridy = 2;
-		mNodeDeleteButton = new JButton("Delete", new ImageIcon("img/delete.png"));
+		mNodeDeleteButton = new JButton("Delete", readImage("delete.png"));
 		mNodeDeleteButton.addActionListener(this);
 		add(mNodeDeleteButton, c);
 		
@@ -124,14 +126,14 @@ public class NodeEditor extends JFrame implements ActionListener {
 		
 		c.gridx = 1;
 		c.gridy = 2;
-		mEntryEditButton = new JButton("Edit", new ImageIcon("img/edit.png"));
+		mEntryEditButton = new JButton("Edit", readImage("edit.png"));
 		mEntryEditButton.addActionListener(this);
 		add(mEntryEditButton, c);
 		
 		
 		c.gridx = 2;
 		c.gridy = 2;
-		mEntryDeleteButton = new JButton("Delete", new ImageIcon("img/delete.png"));
+		mEntryDeleteButton = new JButton("Delete", readImage("delete.png"));
 		mEntryDeleteButton.addActionListener(this);
 		add(mEntryDeleteButton, c);
 		
@@ -270,6 +272,20 @@ public class NodeEditor extends JFrame implements ActionListener {
 	private void fireEntryAdded(Entry e){
 		for(ChangeListener cl : mChangeListener){
 			cl.onEntryAdded(e);
+		}
+	}
+	
+	
+	public ImageIcon readImage(String fname) {
+		try {
+			return new ImageIcon(ImageIO.read(new File("img/" + fname)));
+		} catch (Exception e) {
+			try {
+				return new ImageIcon(ImageIO.read(getClass().getResource("/img/" + fname)));
+			} catch (Exception e1) {
+
+				return null;
+			}
 		}
 	}
 }

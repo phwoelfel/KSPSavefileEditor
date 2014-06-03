@@ -2,6 +2,7 @@ package at.woelfel.philip.kspsavefileeditor.gui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -51,6 +53,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	private JMenuItem mFileSaveItem;
 	
 	private JMenuItem mAboutInfoItem;
+	private JMenuItem mAboutDebugItem;
 	
 	private JPopupMenu mRCPopup; // Right Click Popup
 	private JMenuItem mRCNewNodeMenu;
@@ -75,7 +78,6 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mFileChooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Savefiles (sfs, txt)", "sfs", "txt");
 		mFileChooser.setFileFilter(filter);
-		mFileChooser.setCurrentDirectory(new File("/Volumes/Data/development/java/KSPSaveFileEditor/"));
 		
 		// ################################## Temp Nodes ##################################
 		/*mRootNode = new Node("Node 0", null);
@@ -112,12 +114,13 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		// TODO: menu images
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
-		mFileOpenItem = initializeMenuItem(fileMenu, "Open...", this, new ImageIcon("img/load.png"));
-		mFileSaveItem = initializeMenuItem(fileMenu, "Save...", this, new ImageIcon("img/save.png"));
+		mFileOpenItem = initializeMenuItem(fileMenu, "Open...", this, readImage("load.png"));
+		mFileSaveItem = initializeMenuItem(fileMenu, "Save...", this, readImage("save.png"));
 		menuBar.add(fileMenu);
 		
 		JMenu aboutMenu = new JMenu("About");
-		mAboutInfoItem = initializeMenuItem(aboutMenu, "Info", this, new ImageIcon("img/info.png"));
+		mAboutInfoItem = initializeMenuItem(aboutMenu, "Info", this, readImage("info.png"));
+		mAboutDebugItem = initializeMenuItem(aboutMenu, "Enable Debug", this);
 		menuBar.add(aboutMenu);
 		setJMenuBar(menuBar);
 		
@@ -130,8 +133,8 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mNodeTree.setEditable(true);
 		mNodeTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		
-		ImageIcon rocket = new ImageIcon("img/rocket.png");
-		ImageIcon rocketFly = new ImageIcon("img/rocket-fly.png");
+		ImageIcon rocket = readImage("rocket.png");
+		ImageIcon rocketFly = readImage("rocket-fly.png");
 	    DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
 	    //renderer.setLeafIcon(rocket);
 	    renderer.setClosedIcon(rocket);
@@ -277,6 +280,16 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		else if(source == mAboutInfoItem){
 			new AboutWindow();
 		}
+		else if(source == mAboutDebugItem){
+			if(mLogger.isEnabled()){
+				mLogger.setEnabled(false);
+				mAboutDebugItem.setText("Enable Debug");
+			}
+			else{
+				mLogger.setEnabled(true);
+				mAboutDebugItem.setText("Disable Debug");
+			}
+		}
 		else if (source == mFileOpenItem) {
 			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = mFileChooser.showOpenDialog(this);
@@ -394,6 +407,19 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		this.mRootNode = mRootNode;
 		mNodeTreeModel.setRootNode(mRootNode);
 		mNodeTableModel.setNode(null);
+	}
+	
+	public ImageIcon readImage(String fname) {
+		try {
+			return new ImageIcon(ImageIO.read(new File("img/" + fname)));
+		} catch (Exception e) {
+			try {
+				return new ImageIcon(ImageIO.read(getClass().getResource("/img/" + fname)));
+			} catch (Exception e1) {
+
+				return null;
+			}
+		}
 	}
 
 }
