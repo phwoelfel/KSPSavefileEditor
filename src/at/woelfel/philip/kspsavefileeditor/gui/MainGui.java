@@ -123,13 +123,6 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		
 		
 		// ################################## Components ##################################
-		createPopupMenu();
-		mEntryEditor = new EntryEditor();
-		mEntryEditor.addChangeListener(this);
-		
-		mNodeEditor = new NodeEditor(mEntryEditor);
-		mNodeEditor.addChangeListener(this);
-		
 		
 		mNodeTreeModel = new NodeTreeModel(mRootNode);
 		mNodeTree = new JTree(mNodeTreeModel);
@@ -164,6 +157,15 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		splitC.weightx = 1;
 		splitC.weighty = 1;
 		add(splitPane, splitC);
+		
+		
+		createPopupMenu();
+		mEntryEditor = new EntryEditor();
+		mEntryEditor.addChangeListener(this);
+		
+		mNodeEditor = new NodeEditor(mEntryEditor);
+		mNodeEditor.addChangeListener(this);
+		
 		setVisible(true);
 	}
 
