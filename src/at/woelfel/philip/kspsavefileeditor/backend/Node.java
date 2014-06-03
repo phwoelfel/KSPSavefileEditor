@@ -143,16 +143,23 @@ public class Node {
 	
 	public String print(int tabs){
 		StringBuilder sb = new StringBuilder();
-		appendLine(sb, tabs, getNodeName());
-		appendLine(sb, tabs, "{");
 		
+		if(!"".equals(getNodeName())){ // empty node name means we don't want to save the node name to file (root node for craft or config files)
+			appendLine(sb, tabs, getNodeName());
+			appendLine(sb, tabs, "{");
+		}
+		else{
+			tabs--; // decrease tabs so it isn't indented
+		}
 		for (Entry entry : getEntries()) {
 			appendLine(sb, tabs+1, entry);
 		}
 		for (Node node : getSubNodes()){
 			sb.append(node.print(tabs+1));
 		}
-		appendLine(sb, tabs, "}");
+		if(!"".equals(getNodeName())){
+			appendLine(sb, tabs, "}");
+		}
 		
 		return sb.toString();
 	}
