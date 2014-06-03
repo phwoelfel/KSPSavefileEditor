@@ -10,6 +10,8 @@ public class Node {
 	private ArrayList<Entry> mEntries;
 	private ArrayList<Node> mSubNodes;
 	
+	private String NL = System.getProperty("line.separator");
+	
 	
 	public Node(String name, Node parent) {
 		mParentNode = parent;
@@ -132,5 +134,35 @@ public class Node {
 		else{
 			return mParentNode.getPathToRoot(path);
 		}
+	}
+	
+	public String print(int tabs){
+		StringBuilder sb = new StringBuilder();
+		appendLine(sb, tabs, getNodeName());
+		appendLine(sb, tabs, "{");
+		
+		for (Entry entry : getEntries()) {
+			appendLine(sb, tabs+1, entry);
+		}
+		for (Node node : getSubNodes()){
+			sb.append(node.print(tabs+1));
+		}
+		appendLine(sb, tabs, "}");
+		
+		return sb.toString();
+	}
+	
+	private void appendLine(StringBuilder sb, int tabs, Object o){
+		sb.append(getTabs(tabs));
+		sb.append(o);
+		sb.append(NL);
+	}
+	
+	private String getTabs(int tabs){
+		StringBuilder sb = new StringBuilder();
+		for(int i=0;i<tabs;i++){
+			sb.append("\t");
+		}
+		return sb.toString();
 	}
 }
