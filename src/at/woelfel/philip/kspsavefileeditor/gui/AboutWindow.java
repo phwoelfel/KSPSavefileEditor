@@ -17,7 +17,7 @@ public class AboutWindow extends JFrame {
 		JComponent con = (JComponent) getContentPane();
 		con.setBorder(new TitledBorder("About"));
 		
-		JLabel text = new JLabel("<html>(c) Philip Woelfel <philip[at]woelfel.at<br /><hr /><br />Icons:\n(C) 2012 Yusuke Kamiyamane. All rights reserved.<br />"+
+		JLabel text = new JLabel("<html>(c) Philip Woelfel &lt;philip[at]woelfel.at&gt;<br /><hr /><br />Icons:\n(C) 2012 Yusuke Kamiyamane. All rights reserved.<br />"+
 				"These icons are licensed under a Creative Commons Attribution 3.0 License.<br />"+
 				"<a href=\"http://creativecommons.org/licenses/by/3.0/\">http://creativecommons.org/licenses/by/3.0/</a></html>");
 		add(text);
