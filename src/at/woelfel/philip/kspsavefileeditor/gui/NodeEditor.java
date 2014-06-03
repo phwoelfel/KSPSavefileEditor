@@ -2,6 +2,7 @@ package at.woelfel.philip.kspsavefileeditor.gui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class NodeEditor extends JFrame implements ActionListener {
 		mChangeListener = new ArrayList<ChangeListener>();
 		
 		setTitle("Node Editor");
-		setSize(350, 300);
+		setSize(600, 300);
 
 		setLayout(new GridBagLayout());
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -71,42 +72,48 @@ public class NodeEditor extends JFrame implements ActionListener {
 		
 		c.gridx = 0;
 		c.gridy = 0;
-		c.gridwidth = 2;
 		JLabel nameLabel = new JLabel("Name");
 		add(nameLabel, c);
 		
 		
 		
-		c.gridx = 2;
+		c.gridx = 1;
 		c.gridy = 0;
+		c.gridwidth = 2;
 		mNameField = new JTextField(10);
 		add(mNameField, c);
 		
 		
+		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = 1;
+		c.gridwidth = 1;
+		c.weightx = 0.2;
 		mSubNodeListModel = new NodeListModel(NodeListModel.MODE_SUBNODES);
 		mSubNodeList = new JList(mSubNodeListModel);
 		mSubNodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		add(new JScrollPane(mSubNodeList), c);
 		
 		
-		c.gridx = 2;
+		c.gridx = 1;
 		c.gridy = 1;
+		c.gridwidth = 2;
+		c.weightx = 0.8;
 		mEntryListModel = new NodeListModel(NodeListModel.MODE_ENTRIES);
 		mEntryList = new JList(mEntryListModel);
 		mEntryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		add(new JScrollPane(mEntryList), c);
 		
 		
-		c.gridwidth = 2;
 		/*c.gridx = 0;
 		c.gridy = 2;
 		mNodeEditButton = new JButton("Edit", new ImageIcon("img/edit.png"));
 		mNodeEditButton.addActionListener(this);
 		add(mNodeEditButton, c);*/
 		
-		
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = 1;
+		c.weightx = 1;
 		c.gridx = 0;
 		c.gridy = 2;
 		mNodeDeleteButton = new JButton("Delete", new ImageIcon("img/delete.png"));
@@ -114,30 +121,32 @@ public class NodeEditor extends JFrame implements ActionListener {
 		add(mNodeDeleteButton, c);
 		
 		
-		c.gridwidth = 1;
-		c.gridx = 2;
+		
+		c.gridx = 1;
 		c.gridy = 2;
 		mEntryEditButton = new JButton("Edit", new ImageIcon("img/edit.png"));
 		mEntryEditButton.addActionListener(this);
 		add(mEntryEditButton, c);
 		
 		
-		c.gridx = 3;
+		c.gridx = 2;
 		c.gridy = 2;
 		mEntryDeleteButton = new JButton("Delete", new ImageIcon("img/delete.png"));
 		mEntryDeleteButton.addActionListener(this);
 		add(mEntryDeleteButton, c);
 		
 		
+		c.insets = new Insets(10, 0, 0, 0);
 		c.gridx = 0;
 		c.gridy = 3;
-		c.gridwidth=2;
+		c.gridwidth = 1;
 		mCancelButton = new JButton("Cancel");
 		mCancelButton.addActionListener(this);
 		add(mCancelButton, c);
 		
-		c.gridx = 2;
+		c.gridx = 1;
 		c.gridy = 3;
+		c.gridwidth=2;
 		mSaveButton = new JButton("Save");
 		mSaveButton.addActionListener(this);
 		add(mSaveButton, c);
