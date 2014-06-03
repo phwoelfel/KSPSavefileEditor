@@ -1,8 +1,9 @@
 package at.woelfel.philip.kspsavefileeditor.gui;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -106,7 +107,9 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		// ################################## Window ##################################
 		setTitle("KSP Savefile Editor");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(1280, 700);
+		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+		//setSize((int)(screen.getWidth()-(screen.getWidth()/10)), (int)(screen.getHeight()-(screen.getHeight()/10)));
+		setSize(screen);
 		setLayout(new GridBagLayout());
 		
 		
@@ -296,7 +299,11 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				mLogger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
 				Parser p = new Parser(mFileChooser.getSelectedFile());
-				setRootNode(p.parse());
+				try {
+					setRootNode(p.parse());
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(this, "Error parsing file!\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 		else if (source == mFileSaveItem) {

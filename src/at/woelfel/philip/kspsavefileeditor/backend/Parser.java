@@ -8,9 +8,14 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingUtilities;
+
+import at.woelfel.philip.kspsavefileeditor.gui.ProgressScreen;
+
 public class Parser {
 	private ArrayList<String> mLines;
 	private int mCurrentLine = 0;
+	private int mLineCount;
 	
 	private Logger mLogger;
 	
@@ -20,6 +25,8 @@ public class Parser {
 	
 	public Parser(File file) {
 		mLogger = Logger.getInstance();
+			
+		
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(file));
@@ -37,20 +44,35 @@ public class Parser {
 				e1.printStackTrace();
 			}
 		}
+		mLineCount = mLines.size();
 	}
 	
-	public Node parse(){
+	public Node parse() throws Exception{
+		//ProgressScreen progressScreen = new ProgressScreen();
+		//ProgressScreen.updateProgressBar(0);
+		
 		long startTime = System.currentTimeMillis();
 		Node n = parseLines(null, 1);
 		long endTime = System.currentTimeMillis();
 		System.out.println("Processing time: "+(endTime-startTime));
+		
+		//progressScreen.setVisible(false);
+		//progressScreen.dispose();
+		
 		return n;
 	}
 	
-	private synchronized Node parseLines(Node parentNode, int mode){
+	private synchronized Node parseLines(Node parentNode, int mode) throws Exception{
 		Node currentNode = new Node("", parentNode);
-		for (; mCurrentLine < mLines.size(); mCurrentLine++) {
+		for (; mCurrentLine < mLineCount; mCurrentLine++) {
+			if(mCurrentLine%100==0){ // update only every 100 lines
+				//ProgressScreen.updateProgressBar((mCurrentLine*100)/mLineCount);
+			}
 			String line = mLines.get(mCurrentLine).trim();
+			if(line.length()==0){
+				// empty line, skipping
+				continue;
+			}
 			mLogger.log("current Line(" +mCurrentLine +"): \"" +line +"\" mode: " +mode);
 			if(mode == 1){ // node name
 				if(isValidName(line)){
@@ -59,9 +81,7 @@ public class Parser {
 					mLogger.log("found node name, setting mode 2: " +line);
 				}
 				else{
-					// TODO: throw exception
-					System.err.println("didn't find valid name");
-					break;
+					throw new Exception("Didn't find valid name but expected one at line "+mCurrentLine);
 				}
 			}
 			else if(mode == 2){ // opening bracket
@@ -70,9 +90,7 @@ public class Parser {
 					mode = 3;
 				}
 				else{
-					// TODO: throw exception
-					System.err.println("didn't find {");
-					break;
+					throw new Exception("Didn't find { but expected one at line "+mCurrentLine);
 				}
 				
 			}
@@ -89,9 +107,7 @@ public class Parser {
 						value = kv[1].trim();
 					}
 					else{
-						// TODO: throw exception
-						System.err.println("couldn't split entry");
-						break;
+						throw new Exception("Couldn't split Entry at line "+mCurrentLine +": " +line);
 					}
 					Entry tmp = new Entry(currentNode, key, value);
 					currentNode.addEntry(tmp);
@@ -109,7 +125,6 @@ public class Parser {
 					mLogger.log("found valid name, parsing subnode: " +line +"\n");
 					mode = 3;
 					parseLines(currentNode, 1);
-					// TODO: zeilen die zu subnode gehoeren ueberspringen --> offset/i als Integer
 					
 				}
 				
