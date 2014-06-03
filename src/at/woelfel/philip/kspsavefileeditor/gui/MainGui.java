@@ -135,7 +135,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mNodeTree = new JTree(mNodeTreeModel);
 		mNodeTree.addTreeSelectionListener(this);
 		mNodeTree.setEditable(true);
-		mNodeTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		mNodeTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		
 		ImageIcon rocket = readImage("rocket.png");
 		ImageIcon rocketFly = readImage("rocket-fly.png");
@@ -232,52 +232,60 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		else if(source == mRCNewEntryMenu){
 			// get selected element
 			TreePath path = mNodeTree.getSelectionPath(); 
-			Object selection = path.getLastPathComponent();
-			// create new entry and add it with selection as parent
-			Node parent=null;
-			if(selection instanceof Entry){
-				parent = ((Entry)selection).getParentNode();
+			if(path!=null){
+				Object selection = path.getLastPathComponent();
+				// create new entry and add it with selection as parent
+				Node parent=null;
+				if(selection instanceof Entry){
+					parent = ((Entry)selection).getParentNode();
+				}
+				else if(selection instanceof Node){
+					parent = (Node)selection;
+				}
+				mEntryEditor.showForNew(parent);
 			}
-			else if(selection instanceof Node){
-				parent = (Node)selection;
-			}
-			mEntryEditor.showForNew(parent);
 		}
 		else if(source == mRCEditMenu){
 			// get selected element
-			TreePath path = mNodeTree.getSelectionPath(); 
-			Object selection = path.getLastPathComponent();
-			if(selection instanceof Entry){
-				// edit Entry
-				mEntryEditor.showForEdit((Entry)selection);
-			}
-			else if(selection instanceof Node){
-				// edit Node
-				mNodeEditor.showForEdit((Node)selection);
+			TreePath path = mNodeTree.getSelectionPath();
+			if(path!=null){
+				Object selection = path.getLastPathComponent();
+				if(selection instanceof Entry){
+					// edit Entry
+					mEntryEditor.showForEdit((Entry)selection);
+				}
+				else if(selection instanceof Node){
+					// edit Node
+					mNodeEditor.showForEdit((Node)selection);
+				}
 			}
 		}
-		else if(source == mRCDeleteMenu){
+		else if (source == mRCDeleteMenu) {
 			// get selected element
-			TreePath path = mNodeTree.getSelectionPath(); 
-			Object selection = path.getLastPathComponent();
+			// TreePath path = mNodeTree.getSelectionPath();
 			int yesno = JOptionPane.showConfirmDialog(this, "Do you really want to delete this Node/Entry?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-			if(yesno == JOptionPane.YES_OPTION){
-				int pc = path.getPathCount();
-				if(pc>=2){ // we got at least two nodes --> remove from parent
-					Node parent = (Node) path.getPathComponent(pc-2);
-					if(selection instanceof Entry){
-						parent.removeEntry((Entry)selection);
-						onEntryRemoved((Entry)selection);
-						selection = null;
+			if (yesno == JOptionPane.YES_OPTION) {
+				TreePath[] paths = mNodeTree.getSelectionPaths();
+				for (int i = 0; i < paths.length; i++) {
+					TreePath path = paths[i];
+					Object selection = path.getLastPathComponent();
+					int pc = path.getPathCount();
+					if (pc >= 2) { // we got at least two nodes --> remove from parent
+						Node parent = (Node) path.getPathComponent(pc - 2);
+						if (selection instanceof Entry) {
+							parent.removeEntry((Entry) selection);
+							onEntryRemoved((Entry) selection);
+							selection = null;
+						}
+						else if (selection instanceof Node) {
+							parent.removeSubNode((Node) selection);
+							onNodeRemoved((Node) selection);
+							selection = null;
+						}
 					}
-					else if(selection instanceof Node){
-						parent.removeSubNode((Node)selection);
-						onNodeRemoved((Node)selection);
-						selection = null;
+					else { // we are deleting the root node!
+							// TODO: delete the root node?
 					}
-				}
-				else{ // we are deleting the root node!
-					// TODO: delete the root node?
 				}
 			}
 		}
@@ -378,14 +386,10 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 				if (path == null)
 					return;	
 				
-				if(path.getLastPathComponent() instanceof Node){
-					Node n = (Node)path.getLastPathComponent();
-					ArrayList<Object> nl = new ArrayList<Object>();
-					n.getPathToRoot(nl);
-					mLogger.log(nl);
+				if(tree.getSelectionCount()<=1){ // if we have nothing or only one node selected, set selection to current item
+					tree.setSelectionPath(path);
 				}
 				
-				tree.setSelectionPath(path);
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
