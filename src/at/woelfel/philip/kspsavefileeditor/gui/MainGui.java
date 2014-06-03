@@ -7,10 +7,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -18,21 +22,27 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import at.woelfel.philip.kspsavefileeditor.backend.ChangeListener;
 import at.woelfel.philip.kspsavefileeditor.backend.Entry;
+import at.woelfel.philip.kspsavefileeditor.backend.Logger;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTreeModel;
+import at.woelfel.philip.kspsavefileeditor.backend.Parser;
 
 public class MainGui extends JFrame implements TreeSelectionListener, ActionListener, ChangeListener{
+	
+	private JFileChooser mFileChooser;
 	
 	private JTable mEntryTable;
 	private JTree mNodeTree;
@@ -55,10 +65,20 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	private NodeEditor mNodeEditor;
 	
 	private Node mRootNode;
+
+	private Logger mLogger;
 	
 	public MainGui() {
+		mLogger = Logger.getInstance();
+		mLogger.setEnabled(false);
+		
+		mFileChooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Savefiles (sfs, txt)", "sfs", "txt");
+		mFileChooser.setFileFilter(filter);
+		mFileChooser.setCurrentDirectory(new File("/Volumes/Data/development/java/KSPSaveFileEditor/"));
+		
 		// ################################## Temp Nodes ##################################
-		mRootNode = new Node("Node 0", null);
+		/*mRootNode = new Node("Node 0", null);
 		for(int i=0;i<10;i++){
 			mRootNode.createEntry("entry1" +((char)(97+i)), "value1" +((char)(97+i)));
 		}
@@ -78,7 +98,9 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			}
 		}
 		
-		
+		Parser p = new Parser("persistent_small.sfs");
+		mRootNode = p.parse();
+		*/
 		// ################################## Window ##################################
 		setTitle("KSP Savefile Editor");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,16 +123,14 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		
 		
 		// ################################## Components ##################################
+		createPopupMenu();
+		mEntryEditor = new EntryEditor();
+		mEntryEditor.addChangeListener(this);
 		
-		GridBagConstraints c = new GridBagConstraints();
-		//c.insets = new Insets(5, 5, 5, 5);
-		c.weightx = 1;
+		mNodeEditor = new NodeEditor(mEntryEditor);
+		mNodeEditor.addChangeListener(this);
 		
-		c.fill = GridBagConstraints.BOTH;
 		
-		c.gridx = 0;
-		c.gridy = 0;
-		c.weighty = 0.7;
 		mNodeTreeModel = new NodeTreeModel(mRootNode);
 		mNodeTree = new JTree(mNodeTreeModel);
 		mNodeTree.addTreeSelectionListener(this);
@@ -127,30 +147,23 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	    mNodeTree.setCellEditor(new NonLeafTreeEditor(mNodeTree, renderer));
 	    
 		
-		
-		JScrollPane nodeTreeJSP = new JScrollPane(mNodeTree);
-		add(nodeTreeJSP,c);
-		
-		
-		
-		createPopupMenu();
-		
-		mEntryEditor = new EntryEditor();
-		mEntryEditor.addChangeListener(this);
-		
-		mNodeEditor = new NodeEditor(mEntryEditor);
-		mNodeEditor.addChangeListener(this);
-		
-		c.gridx = 0;
-		c.gridy = 1;
-		c.weighty = 0.3;
 		mNodeTableModel = new NodeTableModel();
 		mNodeTableModel.addChangeListener(this);
 		mEntryTable = new JTable(mNodeTableModel);
+		
+		JScrollPane nodeTreeJSP = new JScrollPane(mNodeTree);
+		//add(nodeTreeJSP,c);
 		JScrollPane entryTableJSP = new JScrollPane(mEntryTable);
-		add(entryTableJSP, c);
-		
-		
+		//add(entryTableJSP, c);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, nodeTreeJSP, entryTableJSP);
+		splitPane.setDividerLocation(500);
+		GridBagConstraints splitC = new GridBagConstraints();
+		splitC.fill = GridBagConstraints.BOTH;
+		splitC.gridx = 0;
+		splitC.gridy = 0;
+		splitC.weightx = 1;
+		splitC.weighty = 1;
+		add(splitPane, splitC);
 		setVisible(true);
 	}
 
@@ -189,7 +202,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		// TODO: actionlistener for menu items
 		JMenuItem source = (JMenuItem) (e.getSource());
 		String s = "Action event detected.\n" + "\tEvent source: " + source.getText() + " (an instance of " + source.getClass().getSimpleName() + ")";
-		System.out.println(s);
+		mLogger.log(s);
 		
 		
 		// TODO: move right click to function
@@ -255,12 +268,39 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 					}
 				}
 				else{ // we are deleting the root node!
-					
+					// TODO: delete the root node?
 				}
 			}
 		}
 		else if(source == mAboutInfoItem){
 			new AboutWindow();
+		}
+		else if (source == mFileOpenItem) {
+			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int returnVal = mFileChooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				mLogger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
+				Parser p = new Parser(mFileChooser.getSelectedFile());
+				setRootNode(p.parse());
+			}
+		}
+		else if (source == mFileSaveItem) {
+			mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int returnVal = mFileChooser.showSaveDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				mLogger.log("You chose to save this file: " + mFileChooser.getSelectedFile().getName());
+				String content = mRootNode.print(0);
+				try {
+					FileWriter fw = new FileWriter(mFileChooser.getSelectedFile());
+					fw.write(content);
+					fw.flush();
+					fw.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					System.err.println("Couldn't write file!\n" +e1);
+				}
+
+			}
 		}
 	}
 	
@@ -305,7 +345,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 					Node n = (Node)path.getLastPathComponent();
 					ArrayList<Object> nl = new ArrayList<Object>();
 					n.getPathToRoot(nl);
-					System.out.println(nl);
+					mLogger.log(nl);
 				}
 				
 				tree.setSelectionPath(path);
@@ -342,6 +382,16 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	@Override
 	public void onNodeRemoved(Node n) {
 		mNodeTreeModel.fireTreeStructureChanged(n);
+	}
+
+	public Node getRootNode() {
+		return mRootNode;
+	}
+
+	public void setRootNode(Node mRootNode) {
+		this.mRootNode = mRootNode;
+		mNodeTreeModel.setRootNode(mRootNode);
+		mNodeTableModel.setNode(null);
 	}
 
 }
