@@ -85,6 +85,7 @@ public class NodeTreeModel implements TreeModel {
 	
 	public void fireTreeDataChanged(Entry e){
 		TreeModelEvent event = getEvent(e);
+		// TODO: add childs to event
 		for(TreeModelListener l:mTreeListener){
 			l.treeNodesChanged(event);
 		}
@@ -140,6 +141,17 @@ public class NodeTreeModel implements TreeModel {
 		Node editNode = (Node)path.getLastPathComponent(); // should only be node, because leafes can't be edited
 		editNode.setNodeName(""+newValue);
 		fireTreeDataChanged(editNode);
+	}
+
+
+	public Node getRootNode() {
+		return mRootNode;
+	}
+
+
+	public void setRootNode(Node mRootNode) {
+		this.mRootNode = mRootNode;
+		fireTreeStructureChanged(mRootNode);
 	}
 
 }
