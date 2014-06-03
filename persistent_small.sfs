@@ -67,7 +67,7 @@ GAME
 	{
 		name = ScenarioDiscoverableObjects
 		scene = 7, 8, 5
-		 = 203231097
+		enq = 203231097
 		sizeCurve
 		{
 			key = 0 0 1.5 1.5
