@@ -131,14 +131,31 @@ public class Node {
 		return mNodeName;
 	}
 	
-	public ArrayList<Object> getPathToRoot(ArrayList<Object> path){
-		path.add(this);
+	public ArrayList<Object> getPathToRoot(){
+		
 		if(mParentNode==null){
+			ArrayList<Object> path = new ArrayList<Object>();
+			path.add(this);
 			return path;
 		}
 		else{
-			return mParentNode.getPathToRoot(path);
+			ArrayList<Object> path = mParentNode.getPathToRoot();
+			path.add(this);
+			return path;
 		}
+	}
+	
+	public TreePath getTreePathToRoot(){
+		
+		if(mParentNode==null){
+			TreePath tp = new TreePath(this);
+			return tp;
+		}
+		else{
+			TreePath tp =  mParentNode.getTreePathToRoot();
+			//tp.
+		}
+		return null;
 	}
 	
 	public String print(int tabs){

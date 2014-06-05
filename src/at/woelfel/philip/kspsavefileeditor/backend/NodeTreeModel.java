@@ -113,22 +113,21 @@ public class NodeTreeModel implements TreeModel {
 	}
 	
 	private TreeModelEvent getEvent(Node n){
-		ArrayList<Object> path = new ArrayList<Object>();
+		ArrayList<Object> path = null;
 		if(n.hasParent()){
-			n.getParentNode().getPathToRoot(path);
+			path = n.getParentNode().getPathToRoot();
 		}
 		else{
-			n.getPathToRoot(path);
+			path = n.getPathToRoot();
 		}
-		Collections.reverse(path); // we get the path with the root node last
+		Logger.log("path: " +path);
 		
 		return new TreeModelEvent(n, path.toArray());
 	}
 	
 	private TreeModelEvent getEvent(Entry e){
-		ArrayList<Object> path = new ArrayList<Object>();
-		e.getParentNode().getPathToRoot(path);
-		Collections.reverse(path); // we get the path with the root node last
+		ArrayList<Object> path = e.getParentNode().getPathToRoot();
+		Logger.log("path: " +path);
 		
 		return new TreeModelEvent(e, path.toArray());
 	}
