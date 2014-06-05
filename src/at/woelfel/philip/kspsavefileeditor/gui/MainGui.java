@@ -71,11 +71,9 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	
 	private Node mRootNode;
 
-	private Logger mLogger;
 	
 	public MainGui() {
-		mLogger = Logger.getInstance();
-		mLogger.setEnabled(false);
+		Logger.setEnabled(false);
 		
 		mFileChooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Save or Craft files (sfs, txt, craft, cfg)", "sfs", "txt", "craft", "cfg");
@@ -211,7 +209,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		// TODO: actionlistener for menu items
 		JMenuItem source = (JMenuItem) (e.getSource());
 		String s = "Action event detected.\n" + "\tEvent source: " + source.getText() + " (an instance of " + source.getClass().getSimpleName() + ")";
-		mLogger.log(s);
+		Logger.log(s);
 		
 		
 		// TODO: move right click to function
@@ -293,12 +291,12 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			new AboutWindow();
 		}
 		else if(source == mAboutDebugItem){
-			if(mLogger.isEnabled()){
-				mLogger.setEnabled(false);
+			if(Logger.isEnabled()){
+				Logger.setEnabled(false);
 				mAboutDebugItem.setText("Enable Debug");
 			}
 			else{
-				mLogger.setEnabled(true);
+				Logger.setEnabled(true);
 				mAboutDebugItem.setText("Disable Debug");
 			}
 		}
@@ -306,7 +304,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = mFileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				mLogger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
+				Logger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
 				Parser p = new Parser(mFileChooser.getSelectedFile());
 				try {
 					setRootNode(p.parse(true));
@@ -319,7 +317,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = mFileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				mLogger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
+				Logger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
 				Parser p = new Parser(mFileChooser.getSelectedFile());
 				try {
 					setRootNode(p.parse(false));
@@ -333,7 +331,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int returnVal = mFileChooser.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				mLogger.log("You chose to save this file: " + mFileChooser.getSelectedFile().getName());
+				Logger.log("You chose to save this file: " + mFileChooser.getSelectedFile().getName());
 				String content = mRootNode.print(0);
 				try {
 					FileWriter fw = new FileWriter(mFileChooser.getSelectedFile());

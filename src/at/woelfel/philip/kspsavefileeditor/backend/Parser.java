@@ -14,15 +14,11 @@ public class Parser {
 	private int mLineCount;
 
 	
-	private Logger mLogger;
-	
 	public Parser(String fileName){
 		this(new File(fileName));
 	}
 	
 	public Parser(File file) {
-		mLogger = Logger.getInstance();
-			
 		
 		BufferedReader br = null;
 		try {
@@ -75,14 +71,14 @@ public class Parser {
 			if(line.contains("//")){
 				// comment not at the beginning, cut comment
 				line = line.substring(0, line.indexOf("//"));
-				mLogger.log("found comment! new line: " +line);
+				Logger.log("found comment! new line: " +line);
 			}
-			mLogger.log("current Line(" +mCurrentLine +"): \"" +line +"\" mode: " +mode);
+			Logger.log("current Line(" +mCurrentLine +"): \"" +line +"\" mode: " +mode);
 			if(mode == 1){ // node name
 				if(isValidName(line)){
 					currentNode.setNodeName(line);
 					mode = 2;
-					mLogger.log("found node name, setting mode 2: " +line);
+					Logger.log("found node name, setting mode 2: " +line);
 				}
 				else{
 					throw new Exception("Didn't find valid name but expected one at line "+mCurrentLine);
@@ -90,7 +86,7 @@ public class Parser {
 			}
 			else if(mode == 2){ // opening bracket
 				if(line.contains("{")){
-					mLogger.log("found opening bracket, setting mode 3");
+					Logger.log("found opening bracket, setting mode 3");
 					mode = 3;
 				}
 				else{
@@ -115,18 +111,18 @@ public class Parser {
 					}
 					Entry tmp = new Entry(currentNode, key, value);
 					currentNode.addEntry(tmp);
-					mLogger.log("found entry, adding to currentNode: " +tmp);
+					Logger.log("found entry, adding to currentNode: " +tmp);
 				}
 				else if(line.contains("}")){
 					mode = 3;
 					if(parentNode != null){
 						parentNode.addSubNode(currentNode);
 					}
-					mLogger.log("found closing bracket, adding to parent and returning: " +currentNode);
+					Logger.log("found closing bracket, adding to parent and returning: " +currentNode);
 					return currentNode;
 				}
 				else if(isValidName(line)){
-					mLogger.log("found valid name, parsing subnode: " +line +"\n");
+					Logger.log("found valid name, parsing subnode: " +line +"\n");
 					mode = 3;
 					parseLines(currentNode, 1);
 					
