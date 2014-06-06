@@ -354,9 +354,16 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
 			if(search != null && search.length()!=0){
 				TreePath[] tp = getRootNode().multiSearch(search);
-				if(tp!=null){
+				if(tp!=null && tp.length > 0){
 					Logger.log("found something: " +tp);
-					mNodeTree.setSelectionPaths(tp);
+					if(tp.length>1){
+						TreePath sel = (TreePath) JOptionPane.showInputDialog(this, "Found multiple results!\nChoose one:", "Multiple Results", JOptionPane.PLAIN_MESSAGE, null, tp, null);
+						mNodeTree.setSelectionPath(sel);
+					}
+					else{
+						mNodeTree.setSelectionPath(tp[0]);
+					}
+					
 				}
 				else{
 					JOptionPane.showMessageDialog(this, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
