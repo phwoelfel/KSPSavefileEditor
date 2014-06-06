@@ -64,4 +64,10 @@ public class Entry {
 		return false;
 	}
 	
+	public boolean search(String search){
+		if(getKey().toLowerCase().contains(search.toLowerCase()) || getValue().toLowerCase().contains(search.toLowerCase())){
+			return true;
+		}
+		return false;
+	}
 }

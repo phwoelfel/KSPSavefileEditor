@@ -54,6 +54,8 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	private JMenuItem mFileOpenOtherItem;
 	private JMenuItem mFileSaveItem;
 	
+	private JMenuItem mEditSearchItem;
+	
 	private JMenuItem mAboutInfoItem;
 	private JMenuItem mAboutDebugItem;
 	
@@ -119,6 +121,10 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mFileOpenOtherItem = initializeMenuItem(fileMenu, "Open Craft...", this, readImage("load.png"));
 		mFileSaveItem = initializeMenuItem(fileMenu, "Save...", this, readImage("save.png"));
 		menuBar.add(fileMenu);
+		
+		JMenu editMenu = new JMenu("Edit");
+		mEditSearchItem = initializeMenuItem(editMenu, "Search...", this, readImage("search.png"));
+		menuBar.add(editMenu);
 		
 		JMenu aboutMenu = new JMenu("About");
 		mAboutInfoItem = initializeMenuItem(aboutMenu, "Info", this, readImage("info.png"));
@@ -343,6 +349,19 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 					System.err.println("Couldn't write file!\n" +e1);
 				}
 
+			}
+		}
+		else if (source == mEditSearchItem) {
+			String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
+			if(search != null && search.length()!=0){
+				TreePath tp = getRootNode().search(search);
+				if(tp!=null){
+					Logger.log("found something: " +tp);
+					mNodeTree.setSelectionPath(tp);
+				}
+				else{
+					JOptionPane.showMessageDialog(this, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 	}

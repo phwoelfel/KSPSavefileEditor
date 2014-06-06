@@ -2,6 +2,8 @@ package at.woelfel.philip.kspsavefileeditor.backend;
 
 import java.util.ArrayList;
 
+import javax.swing.tree.TreePath;
+
 public class Node {
 	
 	private String mNodeName;
@@ -146,16 +148,7 @@ public class Node {
 	}
 	
 	public TreePath getTreePathToRoot(){
-		
-		if(mParentNode==null){
-			TreePath tp = new TreePath(this);
-			return tp;
-		}
-		else{
-			TreePath tp =  mParentNode.getTreePathToRoot();
-			//tp.
-		}
-		return null;
+		return new TreePath(getPathToRoot());
 	}
 	
 	public String print(int tabs){
@@ -193,5 +186,29 @@ public class Node {
 			sb.append("\t");
 		}
 		return sb.toString();
+	}
+	
+	public TreePath search(String search){
+		// check yourself
+		if(getNodeName().contains(search)){
+			return getTreePathToRoot();
+		}
+		// check entries
+		for (Entry entry : getEntries()) {
+			if(entry.search(search)){
+				ArrayList<Object> path = getPathToRoot();
+				path.add(entry);
+				return new TreePath(path.toArray());
+			}
+		}
+		// check subnodes
+		for (Node node : getSubNodes()) {
+			TreePath tp = node.search(search);
+			if(tp!=null){ // subnode found something and gives us path to root
+				return tp;
+			}
+		}
+		
+		return null; // we didn't find anything
 	}
 }
