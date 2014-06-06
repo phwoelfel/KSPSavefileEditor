@@ -211,4 +211,38 @@ public class Node {
 		
 		return null; // we didn't find anything
 	}
+	
+	public TreePath[] multiSearch(String search){
+		ArrayList<TreePath> paths = new ArrayList<TreePath>();
+		multiSearchInternal(search, paths);
+		TreePath[] results = new TreePath[paths.size()];
+		for (int i=0;i<paths.size();i++) {
+			results[i] = paths.get(i);
+		}
+		return results;
+	}
+	
+	private ArrayList<TreePath> multiSearchInternal(String search,ArrayList<TreePath>  results){
+		if(results==null){
+			results = new ArrayList<TreePath>();
+		}
+		// check yourself
+		if(getNodeName().contains(search)){
+			results.add(getTreePathToRoot());
+		}
+		// check entries
+		for (Entry entry : getEntries()) {
+			if(entry.search(search)){
+				ArrayList<Object> path = getPathToRoot();
+				path.add(entry);
+				results.add(new TreePath(path.toArray()));
+			}
+		}
+		// check subnodes
+		for (Node node : getSubNodes()) {
+			node.multiSearchInternal(search, results);
+		}
+		
+		return results;
+	}
 }

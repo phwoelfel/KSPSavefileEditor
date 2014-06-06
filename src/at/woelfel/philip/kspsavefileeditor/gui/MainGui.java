@@ -12,7 +12,6 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -354,10 +353,10 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		else if (source == mEditSearchItem) {
 			String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
 			if(search != null && search.length()!=0){
-				TreePath tp = getRootNode().search(search);
+				TreePath[] tp = getRootNode().multiSearch(search);
 				if(tp!=null){
 					Logger.log("found something: " +tp);
-					mNodeTree.setSelectionPath(tp);
+					mNodeTree.setSelectionPaths(tp);
 				}
 				else{
 					JOptionPane.showMessageDialog(this, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
