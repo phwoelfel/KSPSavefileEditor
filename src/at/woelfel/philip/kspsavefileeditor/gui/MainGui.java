@@ -145,7 +145,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		
 		ImageIcon rocket = readImage("rocket.png");
 		ImageIcon rocketFly = readImage("rocket-fly.png");
-	    DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+	    IconNodeRenderer renderer = new IconNodeRenderer();
 	    //renderer.setLeafIcon(rocket);
 	    renderer.setClosedIcon(rocket);
 	    renderer.setOpenIcon(rocketFly);

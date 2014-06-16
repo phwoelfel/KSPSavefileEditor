@@ -2,6 +2,7 @@ package at.woelfel.philip.kspsavefileeditor.backend;
 
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.tree.TreePath;
 
 public class Node {
@@ -13,6 +14,8 @@ public class Node {
 	private ArrayList<Node> mSubNodes;
 	
 	private String NL = System.getProperty("line.separator");
+	
+	private ImageIcon mIcon;
 	
 	
 	public Node(String name, Node parent) {
@@ -126,7 +129,7 @@ public class Node {
 	@Override
 	public String toString() {
 		for(Entry e : getEntries()){
-			if("name".equals(e.getKey()) || "part".equals(e.getKey())){
+			if("name".equals(e.getKey()) || "part".equals(e.getKey()) || "id".equals(e.getKey())){
 				return mNodeName +" (" +e.getValue() +")";
 			}
 		}
@@ -244,5 +247,13 @@ public class Node {
 		}
 		
 		return results;
+	}
+
+	public ImageIcon getIcon() {
+		return mIcon;
+	}
+
+	public void setIcon(ImageIcon mIcon) {
+		this.mIcon = mIcon;
 	}
 }

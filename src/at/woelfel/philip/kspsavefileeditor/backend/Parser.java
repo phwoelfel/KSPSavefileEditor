@@ -5,13 +5,19 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public class Parser {
 	private ArrayList<String> mLines;
 	private int mCurrentLine = 0;
 	private int mLineCount;
+	
+	private Hashtable<String, ImageIcon> mImageCache;
 
 	
 	public Parser(String fileName){
@@ -38,6 +44,7 @@ public class Parser {
 			}
 		}
 		mLineCount = mLines.size();
+		mImageCache = new Hashtable<String, ImageIcon>();
 	}
 	
 	public Node parse(boolean hasRootNode) throws Exception{
@@ -78,6 +85,11 @@ public class Parser {
 				if(isValidName(line)){
 					currentNode.setNodeName(line);
 					mode = 2;
+					ImageIcon tmpIcon = readNodeImage(line.toLowerCase() +".png");
+					if(tmpIcon != null){
+						currentNode.setIcon(tmpIcon);
+					}
+					
 					Logger.log("found node name, setting mode 2: " +line);
 				}
 				else{
@@ -111,6 +123,12 @@ public class Parser {
 					}
 					Entry tmp = new Entry(currentNode, key, value);
 					currentNode.addEntry(tmp);
+					
+					if("type".equals(key) && "Flag".equals(value)){
+						currentNode.setIcon(readNodeImage("flag.png"));
+						// will override vessel icon because it is set later
+					}
+					
 					Logger.log("found entry, adding to currentNode: " +tmp);
 				}
 				else if(line.contains("}")){
@@ -138,5 +156,24 @@ public class Parser {
 		 Matcher matcher = pattern.matcher(line);
 		 return matcher.matches();
 	}
+	
+	private ImageIcon readNodeImage(String fname) {
+		if(mImageCache.containsKey(fname)){
+			return mImageCache.get(fname);
+		}
+		try {
+			ImageIcon img = new ImageIcon(ImageIO.read(new File("img/nodes/" + fname)));
+			mImageCache.put(fname, img);
+			return img;
+		} catch (Exception e) {
+			try {
+				ImageIcon img = new ImageIcon(ImageIO.read(getClass().getResource("/img/nodes/" + fname)));
+				mImageCache.put(fname, img);
+				return img;
+			} catch (Exception e1) {
 
+				return null;
+			}
+		}
+	}
 }
