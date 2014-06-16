@@ -359,9 +359,11 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 					if(tp.length>1){
 						TreePath sel = (TreePath) JOptionPane.showInputDialog(this, "Found multiple results!\nChoose one:", "Multiple Results", JOptionPane.PLAIN_MESSAGE, null, tp, null);
 						mNodeTree.setSelectionPath(sel);
+						mNodeTree.scrollPathToVisible(sel);
 					}
 					else{
 						mNodeTree.setSelectionPath(tp[0]);
+						mNodeTree.scrollPathToVisible(tp[0]);
 					}
 					
 				}
