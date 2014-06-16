@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -57,6 +58,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 	
 	private JMenuItem mAboutInfoItem;
 	private JMenuItem mAboutDebugItem;
+	private JMenuItem mAboutFileDebugItem;
 	
 	private JPopupMenu mRCPopup; // Right Click Popup
 	private JMenuItem mRCNewNodeMenu;
@@ -128,6 +130,7 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		JMenu aboutMenu = new JMenu("About");
 		mAboutInfoItem = initializeMenuItem(aboutMenu, "Info", this, readImage("info.png"));
 		mAboutDebugItem = initializeMenuItem(aboutMenu, "Enable Debug", this);
+		mAboutFileDebugItem = initializeMenuItem(aboutMenu, "Enable File Debug", this);
 		menuBar.add(aboutMenu);
 		setJMenuBar(menuBar);
 		
@@ -303,6 +306,26 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			else{
 				Logger.setEnabled(true);
 				mAboutDebugItem.setText("Disable Debug");
+			}
+		}
+		else if(source == mAboutFileDebugItem){
+			if(Logger.isFileEnabled()){
+				Logger.setFileEnabled(false);
+				mAboutFileDebugItem.setText("Enable File Debug");
+			}
+			else{
+				mFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				int returnVal = mFileChooser.showSaveDialog(this);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					try {
+						Logger.setLogFile(mFileChooser.getSelectedFile());
+					} catch (FileNotFoundException e1) {
+						JOptionPane.showMessageDialog(this, "Error creating logfile!\n"+e1.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				Logger.setFileEnabled(true);
+				mAboutFileDebugItem.setText("Disable File Debug");
+				
 			}
 		}
 		else if (source == mFileOpenSFSItem) {

@@ -118,11 +118,11 @@ public class Parser {
 					if(parentNode != null){
 						parentNode.addSubNode(currentNode);
 					}
-					Logger.log("found closing bracket, adding to parent and returning: " +currentNode);
+					Logger.log("found closing bracket, adding to parent and returning: " +currentNode +"\n---------------------------------------------------------------------------------------------------------");
 					return currentNode;
 				}
 				else if(isValidName(line)){
-					Logger.log("found valid name, parsing subnode: " +line +"\n");
+					Logger.log("found valid name, parsing subnode: " +line +"\n---------------------------------------------------------------------------------------------------------");
 					mode = 3;
 					parseLines(currentNode, 1);
 					
