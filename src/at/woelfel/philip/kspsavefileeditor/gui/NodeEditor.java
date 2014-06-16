@@ -57,7 +57,6 @@ public class NodeEditor extends JFrame implements ActionListener {
 	
 	public NodeEditor(EntryEditor editor) {
 		mEntryEditor = editor;
-		// TODO: lists for subnodes and entries
 		
 		mChangeListener = new ArrayList<ChangeListener>();
 		

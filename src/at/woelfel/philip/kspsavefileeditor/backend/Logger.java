@@ -16,7 +16,6 @@ public class Logger {
 	private static File mLogFile = new File("log.txt");
 	
 	private Logger(){
-		// TODO: log to file
 	}
 	
 	public static void log(Object str){

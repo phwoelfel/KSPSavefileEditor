@@ -15,7 +15,7 @@ class IconNodeRenderer extends DefaultTreeCellRenderer {
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		
 		if(value instanceof Node){
-			// only change node icons
+			// TODO: only change node icons? 
 			
 			Icon icon = ((Node) value).getIcon();
 	
