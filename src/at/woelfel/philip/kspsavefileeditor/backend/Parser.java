@@ -134,7 +134,7 @@ public class Parser {
 	}
 	
 	private boolean isValidName(String line){
-		 Pattern pattern = Pattern.compile("[A-Za-z_-]*");
+		 Pattern pattern = Pattern.compile("[A-Za-z0-9_-]*");
 		 Matcher matcher = pattern.matcher(line);
 		 return matcher.matches();
 	}
