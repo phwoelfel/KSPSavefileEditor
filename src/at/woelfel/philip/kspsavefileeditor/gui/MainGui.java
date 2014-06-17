@@ -9,12 +9,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -31,10 +29,10 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import at.woelfel.philip.kspsavefileeditor.MainClass;
 import at.woelfel.philip.kspsavefileeditor.backend.ChangeListener;
 import at.woelfel.philip.kspsavefileeditor.backend.Entry;
 import at.woelfel.philip.kspsavefileeditor.backend.Logger;
@@ -118,17 +116,17 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		// ################################## Menu ##################################
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
-		mFileOpenSFSItem = initializeMenuItem(fileMenu, "Open...", this, readImage("load.png"));
-		mFileOpenOtherItem = initializeMenuItem(fileMenu, "Open Craft...", this, readImage("load.png"));
-		mFileSaveItem = initializeMenuItem(fileMenu, "Save...", this, readImage("save.png"));
+		mFileOpenSFSItem = initializeMenuItem(fileMenu, "Open...", this, MainClass.readImage("load.png"));
+		mFileOpenOtherItem = initializeMenuItem(fileMenu, "Open Craft...", this, MainClass.readImage("load.png"));
+		mFileSaveItem = initializeMenuItem(fileMenu, "Save...", this, MainClass.readImage("save.png"));
 		menuBar.add(fileMenu);
 		
 		JMenu editMenu = new JMenu("Edit");
-		mEditSearchItem = initializeMenuItem(editMenu, "Search...", this, readImage("search.png"));
+		mEditSearchItem = initializeMenuItem(editMenu, "Search...", this, MainClass.readImage("search.png"));
 		menuBar.add(editMenu);
 		
 		JMenu aboutMenu = new JMenu("About");
-		mAboutInfoItem = initializeMenuItem(aboutMenu, "Info", this, readImage("info.png"));
+		mAboutInfoItem = initializeMenuItem(aboutMenu, "Info", this, MainClass.readImage("info.png"));
 		mAboutDebugItem = initializeMenuItem(aboutMenu, "Enable Debug", this);
 		mAboutFileDebugItem = initializeMenuItem(aboutMenu, "Enable File Debug", this);
 		menuBar.add(aboutMenu);
@@ -143,8 +141,8 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mNodeTree.setEditable(true);
 		mNodeTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		
-		ImageIcon rocket = readImage("rocket.png");
-		ImageIcon rocketFly = readImage("rocket-fly.png");
+		ImageIcon rocket = MainClass.readImage("rocket.png");
+		ImageIcon rocketFly = MainClass.readImage("rocket-fly.png");
 	    IconNodeRenderer renderer = new IconNodeRenderer();
 	    //renderer.setLeafIcon(rocket);
 	    renderer.setClosedIcon(rocket);
@@ -483,17 +481,6 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mNodeTableModel.setNode(null);
 	}
 	
-	public ImageIcon readImage(String fname) {
-		try {
-			return new ImageIcon(ImageIO.read(new File("img/" + fname)));
-		} catch (Exception e) {
-			try {
-				return new ImageIcon(ImageIO.read(getClass().getResource("/img/" + fname)));
-			} catch (Exception e1) {
-
-				return null;
-			}
-		}
-	}
+	
 
 }

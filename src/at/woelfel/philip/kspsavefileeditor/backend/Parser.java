@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import at.woelfel.philip.kspsavefileeditor.MainClass;
+
 public class Parser {
 	private ArrayList<String> mLines;
 	private int mCurrentLine = 0;
@@ -85,7 +87,7 @@ public class Parser {
 				if(isValidName(line)){
 					currentNode.setNodeName(line);
 					mode = 2;
-					ImageIcon tmpIcon = readNodeImage(line.toLowerCase() +".png");
+					ImageIcon tmpIcon = MainClass.readImage("nodes/"+line.toLowerCase() +".png");
 					if(tmpIcon != null){
 						currentNode.setIcon(tmpIcon);
 					}
@@ -125,7 +127,7 @@ public class Parser {
 					currentNode.addEntry(tmp);
 					
 					if("type".equals(key) && "Flag".equals(value)){
-						currentNode.setIcon(readNodeImage("flag.png"));
+						currentNode.setIcon(MainClass.readImage("nodes/flag.png"));
 						// will override vessel icon because it is set later
 					}
 					
@@ -155,25 +157,5 @@ public class Parser {
 		 Pattern pattern = Pattern.compile("[A-Za-z0-9_-]*");
 		 Matcher matcher = pattern.matcher(line);
 		 return matcher.matches();
-	}
-	
-	private ImageIcon readNodeImage(String fname) {
-		if(mImageCache.containsKey(fname)){
-			return mImageCache.get(fname);
-		}
-		try {
-			ImageIcon img = new ImageIcon(ImageIO.read(new File("img/nodes/" + fname)));
-			mImageCache.put(fname, img);
-			return img;
-		} catch (Exception e) {
-			try {
-				ImageIcon img = new ImageIcon(ImageIO.read(getClass().getResource("/img/nodes/" + fname)));
-				mImageCache.put(fname, img);
-				return img;
-			} catch (Exception e1) {
-
-				return null;
-			}
-		}
 	}
 }
