@@ -1,14 +1,14 @@
 package at.woelfel.philip.kspsavefileeditor.gui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -25,7 +25,6 @@ import at.woelfel.philip.kspsavefileeditor.Tools;
 import at.woelfel.philip.kspsavefileeditor.backend.Logger;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
-import at.woelfel.philip.kspsavefileeditor.backend.Parser;
 
 @SuppressWarnings("serial")
 public class MainGui extends JFrame implements ActionListener{
@@ -33,7 +32,9 @@ public class MainGui extends JFrame implements ActionListener{
 	private JFileChooser mFileChooser;
 	
 	private JTable mEntryTable;
-	private TreeWindow mTreeWindow;
+	private TreeWindow mPrimaryTreeWindow;
+	private TreeWindow mSecondaryTreeWindow;
+	
 	
 	private JMenuItem mFileOpenSFSItem;
 	private JMenuItem mFileOpenOtherItem;
@@ -50,7 +51,8 @@ public class MainGui extends JFrame implements ActionListener{
 	private NodeTableModel mNodeTableModel;
 	
 	
-	private Node mRootNode;
+	private Node mPrimaryRootNode;
+	private Node mSecondaryRootNode;
 
 	
 	public MainGui() {
@@ -62,14 +64,22 @@ public class MainGui extends JFrame implements ActionListener{
 		
 			
 		// ################################## Temp Nodes ##################################
-		mRootNode = new Node("GAME", null);
-		mRootNode.setIcon(Tools.readImage("nodes/game.png"));
+		mPrimaryRootNode = new Node("GAME", null);
+		mPrimaryRootNode.setIcon(Tools.readImage("nodes/game.png"));
 		String[] tmpNodeNames = {"ACTIONGROUPS", "ACTIONS", "CREW", "EDITOR", "EVENTS", "FLIGHTSTATE", "MODULE", "ORBIT", "PART", "PLANETS", "RECRUIT", "ROSTER", "SCIENCE", "TRACKINGSTATION", "VESSEL", "VESSELS/FLAG", "VESSELS/BASE", "VESSELS/PROBE", "VESSELS/SPACEOBJECT"};
 		for (int i = 0; i < tmpNodeNames.length; i++) {
 			String tmpName = tmpNodeNames[i];
-			Node tmpNode = new Node(tmpName, mRootNode);
+			Node tmpNode = new Node(tmpName, mPrimaryRootNode);
 			tmpNode.setIcon(Tools.readImage("nodes/" +tmpName.toLowerCase() +".png"));
-			mRootNode.addSubNode(tmpNode);
+			mPrimaryRootNode.addSubNode(tmpNode);
+		}
+		mSecondaryRootNode = new Node("GAME", null);
+		mSecondaryRootNode.setIcon(Tools.readImage("nodes/game.png"));
+		for (int i = 0; i < tmpNodeNames.length; i++) {
+			String tmpName = tmpNodeNames[i];
+			Node tmpNode = new Node(tmpName, mPrimaryRootNode);
+			tmpNode.setIcon(Tools.readImage("nodes/" +tmpName.toLowerCase() +".png"));
+			mSecondaryRootNode.addSubNode(tmpNode);
 		}
 		/*mRootNode = new Node("Node 0", null);
 		for(int i=0;i<10;i++){
@@ -124,20 +134,23 @@ public class MainGui extends JFrame implements ActionListener{
 		
 		
 		// ################################## Components ##################################
-		
 		mNodeTableModel = new NodeTableModel();
 		mEntryTable = new JTable(mNodeTableModel);
-		
-		mTreeWindow = new TreeWindow(mRootNode, mNodeTableModel);
-		
-		mNodeTableModel.addChangeListener(mTreeWindow);
-		
-		JScrollPane nodeTreeJSP = new JScrollPane(mTreeWindow);
-		//add(nodeTreeJSP,c);
 		JScrollPane entryTableJSP = new JScrollPane(mEntryTable);
-		//add(entryTableJSP, c);
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, nodeTreeJSP, entryTableJSP);
-		splitPane.setDividerLocation(500);
+		
+		mPrimaryTreeWindow = new TreeWindow(mPrimaryRootNode, mNodeTableModel);
+		JScrollPane primaryTreeJSP = new JScrollPane(mPrimaryTreeWindow);
+		mSecondaryTreeWindow = new TreeWindow(mSecondaryRootNode, mNodeTableModel);
+		JScrollPane secondaryTreeJSP = new JScrollPane(mSecondaryTreeWindow);
+		
+		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, primaryTreeJSP, secondaryTreeJSP);
+		mainSplitPane.setDividerLocation((screen.width/4)*3); // set to 3/4 of screen width
+		
+		
+		
+				
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, entryTableJSP);
+		splitPane.setDividerLocation((screen.height/3)*2); // set to 2/3 of screen height
 		GridBagConstraints splitC = new GridBagConstraints();
 		splitC.fill = GridBagConstraints.BOTH;
 		splitC.gridx = 0;
@@ -145,6 +158,11 @@ public class MainGui extends JFrame implements ActionListener{
 		splitC.weightx = 1;
 		splitC.weighty = 1;
 		add(splitPane, splitC);
+		
+		
+		
+		//add(nodeTreeJSP,c);
+		//add(entryTableJSP, c);
 		
 		
 		setVisible(true);
@@ -202,49 +220,79 @@ public class MainGui extends JFrame implements ActionListener{
 			}
 		}
 		else if (source == mFileOpenSFSItem) {
+			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+			
 			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = mFileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				Logger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
-				mTreeWindow.load(mFileChooser.getSelectedFile(), true);
+				if(curWindow == mPrimaryTreeWindow){
+					mPrimaryTreeWindow.load(mFileChooser.getSelectedFile(), true);
+				}
+				else if(curWindow == mSecondaryTreeWindow){
+					mSecondaryTreeWindow.load(mFileChooser.getSelectedFile(), true);
+				}
+				else{
+					JOptionPane.showMessageDialog(this, "Please select a tree window to load the file!", "Error", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		}
 		else if (source == mFileOpenOtherItem) {
+			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+			
 			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = mFileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				Logger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
-				mTreeWindow.load(mFileChooser.getSelectedFile(), false);
+				if(curWindow == mPrimaryTreeWindow){
+					mPrimaryTreeWindow.load(mFileChooser.getSelectedFile(), false);
+				}
+				else if(curWindow == mSecondaryTreeWindow){
+					mSecondaryTreeWindow.load(mFileChooser.getSelectedFile(), false);
+				}
+				else{
+					JOptionPane.showMessageDialog(this, "Please select a tree window to load the file!", "Error", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		}
 		else if (source == mFileSaveItem) {
+			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+			
 			mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int returnVal = mFileChooser.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				Logger.log("You chose to save this file: " + mFileChooser.getSelectedFile().getName());
-				mTreeWindow.save(mFileChooser.getSelectedFile());
+				if(curWindow == mPrimaryTreeWindow){
+					mPrimaryTreeWindow.save(mFileChooser.getSelectedFile());
+				}
+				else if(curWindow == mSecondaryTreeWindow){
+					mSecondaryTreeWindow.save(mFileChooser.getSelectedFile());
+				}
+				else{
+					JOptionPane.showMessageDialog(this, "Please select a tree window to save the file!", "Error", JOptionPane.WARNING_MESSAGE);
+				}
 
 			}
 		}
 		else if (source == mEditSearchItem) {
+			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+			
 			String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
-			if(!mTreeWindow.search(search)){
-				// TODO show error here or in TreeWindow.search()?
+			if(curWindow == mPrimaryTreeWindow){
+				mPrimaryTreeWindow.search(search);
+			}
+			else if(curWindow == mSecondaryTreeWindow){
+				mSecondaryTreeWindow.search(search);
+			}
+			else{
+				JOptionPane.showMessageDialog(this, "Please select a tree window to search!", "Error", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
 	
 	
 
-	public Node getRootNode() {
-		return mRootNode;
-	}
-
-	public void setRootNode(Node mRootNode) {
-		this.mRootNode = mRootNode;
-		mTreeWindow.setRootNode(mRootNode);
-		mNodeTableModel.setNode(null);
-	}
+	
 	
 	
 
