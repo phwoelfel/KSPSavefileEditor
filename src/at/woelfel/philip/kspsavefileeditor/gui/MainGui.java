@@ -44,6 +44,7 @@ import at.woelfel.philip.kspsavefileeditor.backend.Parser;
 public class MainGui extends JFrame implements TreeSelectionListener, ActionListener, ChangeListener{
 	
 	private JFileChooser mFileChooser;
+	private ProgressScreen mProgressScreen;
 	
 	private JTable mEntryTable;
 	private JTree mNodeTree;
@@ -79,6 +80,8 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mFileChooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Save or Craft files (sfs, txt, craft, cfg)", "sfs", "txt", "craft", "cfg");
 		mFileChooser.setFileFilter(filter);
+		
+		mProgressScreen = new ProgressScreen();
 		
 		// ################################## Temp Nodes ##################################
 		mRootNode = new Node("GAME", null);
@@ -340,12 +343,21 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			int returnVal = mFileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				Logger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
-				Parser p = new Parser(mFileChooser.getSelectedFile());
-				try {
-					setRootNode(p.parse(true));
-				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(this, "Error parsing file!\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
+				final Parser p = new Parser(mFileChooser.getSelectedFile());
+				mProgressScreen.setVisible(true);
+				Thread th = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							setRootNode(p.parse(true));
+							mProgressScreen.setVisible(false);
+						} catch (Exception e) {
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(MainGui.this, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+				});
+				th.start();	
 			}
 		}
 		else if (source == mFileOpenOtherItem) {
@@ -353,13 +365,21 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 			int returnVal = mFileChooser.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				Logger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
-				Parser p = new Parser(mFileChooser.getSelectedFile());
-				try {
-					setRootNode(p.parse(false));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(this, "Error parsing file!\n"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-				}
+				final Parser p = new Parser(mFileChooser.getSelectedFile());
+				mProgressScreen.setVisible(true);
+				Thread th = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							setRootNode(p.parse(false));
+							mProgressScreen.setVisible(false);
+						} catch (Exception e) {
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(MainGui.this, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+				});
+				th.start();
 			}
 		}
 		else if (source == mFileSaveItem) {

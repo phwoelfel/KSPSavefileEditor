@@ -12,20 +12,24 @@ import at.woelfel.philip.kspsavefileeditor.gui.MainGui;
 public class MainClass {
 
 	private static Hashtable<String, ImageIcon> mImageCache;
-	
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		MainGui mainGui = new MainGui();
+		 javax.swing.SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	            	MainGui mainGui = new MainGui();
+	            }
+		 });
 	}
-	
+
 	public static ImageIcon readImage(String fname) {
-		if(mImageCache == null){
+		if (mImageCache == null) {
 			mImageCache = new Hashtable<String, ImageIcon>();
 		}
-		if(mImageCache.containsKey(fname)){
-			Logger.log("Returning image from cache: " +fname);
+		if (mImageCache.containsKey(fname)) {
+			Logger.log("Returning image from cache: " + fname);
 			return mImageCache.get(fname);
 		}
 		try {
@@ -42,6 +46,5 @@ public class MainClass {
 			}
 		}
 	}
-	
-	
+
 }

@@ -18,6 +18,10 @@ public class Logger {
 	private Logger(){
 	}
 	
+	public static void logInfo(Object str){
+		System.out.println(""+str);
+	}
+	
 	public static void log(Object str){
 		if(mIsEnabled){
 			System.out.println(str);

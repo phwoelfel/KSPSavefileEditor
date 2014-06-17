@@ -9,17 +9,15 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import at.woelfel.philip.kspsavefileeditor.MainClass;
+import at.woelfel.philip.kspsavefileeditor.gui.ProgressScreen;
 
 public class Parser {
 	private ArrayList<String> mLines;
 	private int mCurrentLine = 0;
 	private int mLineCount;
-	
-	private Hashtable<String, ImageIcon> mImageCache;
 
 	
 	public Parser(String fileName){
@@ -46,27 +44,37 @@ public class Parser {
 			}
 		}
 		mLineCount = mLines.size();
-		mImageCache = new Hashtable<String, ImageIcon>();
 	}
 	
 	public Node parse(boolean hasRootNode) throws Exception{
 		Node n = null;
-		if(hasRootNode){
-			long startTime = System.currentTimeMillis();
+		ProgressScreen.updateProgressBar(0);
+		
+		long startTime = System.currentTimeMillis();
+		if(hasRootNode){	
 			n = parseLines(null, 1);
-			long endTime = System.currentTimeMillis();
-			System.out.println("Processing time: "+(endTime-startTime));
 		}
 		else{
 			//n = new Node("", null); // create a nameless root node
 			n = parseLines(null, 3); // parse with parent node present --> mode 3
 		}
+		long endTime = System.currentTimeMillis();
+		Logger.logInfo("Processing time: "+(endTime-startTime));
+
+		
 		return n;
 	}
 	
 	private synchronized Node parseLines(Node parentNode, int mode) throws Exception{
 		Node currentNode = new Node("", parentNode);
 		for (; mCurrentLine < mLineCount; mCurrentLine++) {
+			
+			if(mCurrentLine%1000==0){
+				// update every 1000 lines
+				int percent = (mCurrentLine*100)/mLineCount;
+				//Logger.logInfo("percent: " +percent);
+				ProgressScreen.updateProgressBar(percent);
+			}
 			
 			String line = mLines.get(mCurrentLine).trim();
 			if(line.length()==0){
