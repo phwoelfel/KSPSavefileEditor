@@ -12,12 +12,13 @@ import javax.swing.SwingUtilities;
 public class ProgressScreen extends JFrame {
 
 	private static JProgressBar mProgressBar;
-	private JLabel mLabel;
+	private static JLabel mLabel;
+	private static ProgressScreen mInstance;
 	
-	public ProgressScreen(String label, Component parent) {
+	private ProgressScreen(String label, Component parent) {
 		setAlwaysOnTop(true);
 		setUndecorated(true);
-		setSize(200,40);
+		//setSize(200,40);
 		setLayout(new BorderLayout());
 		
 		mProgressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
@@ -26,12 +27,29 @@ public class ProgressScreen extends JFrame {
 		
 		mLabel = new JLabel(label);
 		add(mLabel, BorderLayout.CENTER);
+		
+		setLocationRelativeTo(parent);
 		pack();
-		setLocationRelativeTo(null);
 	}
 	
 	
-	public void setLabel(String label){
+	public static void showProgress(String label, Component parent){
+		if(mInstance == null){
+			mInstance = new ProgressScreen(label, parent);
+		}
+		else{
+			mInstance.setLabel(label);
+			mInstance.setLocationRelativeTo(parent);
+		}
+		mInstance.setVisible(true);
+	}
+	
+	public static void hideProgress(){
+		mInstance.setVisible(false);
+	}
+	
+	
+	private void setLabel(String label){
 		if(mLabel!=null){
 			mLabel.setText(label);
 		}

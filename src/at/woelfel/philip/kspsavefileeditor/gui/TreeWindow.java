@@ -36,8 +36,6 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	private NodeTreeModel mNodeTreeModel;
 	private NodeTableModel mNodeTableModel;
 
-	private ProgressScreen mProgressScreen;
-
 	private Node mRootNode;
 
 	private EntryEditor mEntryEditor;
@@ -56,11 +54,10 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	public TreeWindow(Node rootNode, NodeTableModel nodeTableModel) {
 		super();
 
-		mProgressScreen = new ProgressScreen("Parsing savefile...", this);
-
 		mRootNode = rootNode;
 		mNodeTableModel = nodeTableModel;
-
+		mNodeTableModel.addChangeListener(this);
+		
 		mNodeTreeModel = new NodeTreeModel(mRootNode);
 		setModel(mNodeTreeModel);
 		addTreeSelectionListener(this);
@@ -91,9 +88,8 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	 */
 	public void load(File f, final boolean hasRoot) {
 		final Parser p = new Parser(f);
-		mProgressScreen.setLabel("Parsing savefile...");
+		ProgressScreen.showProgress("Parsing savefile...", this);
 		ProgressScreen.updateProgressBar(0);
-		mProgressScreen.setVisible(true);
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -103,7 +99,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(TreeWindow.this, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
-				mProgressScreen.setVisible(false);
+				ProgressScreen.hideProgress();
 			}
 		});
 		th.start();
@@ -114,9 +110,8 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	 * @param f
 	 */
 	public void save(final File f) {
-		mProgressScreen.setLabel("Saving file...");
+		ProgressScreen.showProgress("Saving file...", this);
 		ProgressScreen.updateProgressBar(0);
-		mProgressScreen.setVisible(true);
 		Thread th = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -135,7 +130,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 					e1.printStackTrace();
 					System.err.println("Couldn't write file!\n" + e1);
 				}
-				mProgressScreen.setVisible(false);
+				ProgressScreen.hideProgress();
 
 			}
 		});
