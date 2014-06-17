@@ -35,6 +35,7 @@ import javax.swing.tree.TreeSelectionModel;
 import at.woelfel.philip.kspsavefileeditor.MainClass;
 import at.woelfel.philip.kspsavefileeditor.backend.ChangeListener;
 import at.woelfel.philip.kspsavefileeditor.backend.Entry;
+import at.woelfel.philip.kspsavefileeditor.Tools;
 import at.woelfel.philip.kspsavefileeditor.backend.Logger;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
@@ -85,12 +86,12 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		
 		// ################################## Temp Nodes ##################################
 		mRootNode = new Node("GAME", null);
-		mRootNode.setIcon(MainClass.readImage("nodes/game.png"));
+		mRootNode.setIcon(Tools.readImage("nodes/game.png"));
 		String[] tmpNodeNames = {"ACTIONGROUPS", "ACTIONS", "CREW", "EDITOR", "EVENTS", "FLIGHTSTATE", "MODULE", "ORBIT", "PART", "PLANETS", "RECRUIT", "ROSTER", "SCIENCE", "TRACKINGSTATION", "VESSEL", "VESSELS/FLAG", "VESSELS/BASE", "VESSELS/PROBE", "VESSELS/SPACEOBJECT"};
 		for (int i = 0; i < tmpNodeNames.length; i++) {
 			String tmpName = tmpNodeNames[i];
 			Node tmpNode = new Node(tmpName, mRootNode);
-			tmpNode.setIcon(MainClass.readImage("nodes/" +tmpName.toLowerCase() +".png"));
+			tmpNode.setIcon(Tools.readImage("nodes/" +tmpName.toLowerCase() +".png"));
 			mRootNode.addSubNode(tmpNode);
 		}
 		/*mRootNode = new Node("Node 0", null);
@@ -128,19 +129,19 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		// ################################## Menu ##################################
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
-		mFileOpenSFSItem = initializeMenuItem(fileMenu, "Open...", this, MainClass.readImage("load.png"));
-		mFileOpenOtherItem = initializeMenuItem(fileMenu, "Open Craft...", this, MainClass.readImage("load.png"));
-		mFileSaveItem = initializeMenuItem(fileMenu, "Save...", this, MainClass.readImage("save.png"));
+		mFileOpenSFSItem = Tools.initializeMenuItem(fileMenu, "Open...", this, Tools.readImage("load.png"));
+		mFileOpenOtherItem = Tools.initializeMenuItem(fileMenu, "Open Craft...", this, Tools.readImage("load.png"));
+		mFileSaveItem = Tools.initializeMenuItem(fileMenu, "Save...", this, Tools.readImage("save.png"));
 		menuBar.add(fileMenu);
 		
 		JMenu editMenu = new JMenu("Edit");
-		mEditSearchItem = initializeMenuItem(editMenu, "Search...", this, MainClass.readImage("search.png"));
+		mEditSearchItem = Tools.initializeMenuItem(editMenu, "Search...", this, Tools.readImage("search.png"));
 		menuBar.add(editMenu);
 		
 		JMenu aboutMenu = new JMenu("About");
-		mAboutInfoItem = initializeMenuItem(aboutMenu, "Info", this, MainClass.readImage("info.png"));
-		mAboutDebugItem = initializeMenuItem(aboutMenu, "Enable Debug", this);
-		mAboutFileDebugItem = initializeMenuItem(aboutMenu, "Enable File Debug", this);
+		mAboutInfoItem = Tools.initializeMenuItem(aboutMenu, "Info", this, Tools.readImage("info.png"));
+		mAboutDebugItem = Tools.initializeMenuItem(aboutMenu, "Enable Debug", this);
+		mAboutFileDebugItem = Tools.initializeMenuItem(aboutMenu, "Enable File Debug", this);
 		menuBar.add(aboutMenu);
 		setJMenuBar(menuBar);
 		
