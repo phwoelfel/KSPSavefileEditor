@@ -132,11 +132,11 @@ public class MainGui extends JFrame implements ActionListener{
 		
 		mNodeTableModel.addChangeListener(mTreeWindow);
 		
-		//JScrollPane nodeTreeJSP = new JScrollPane(mTreeWindow);
+		JScrollPane nodeTreeJSP = new JScrollPane(mTreeWindow);
 		//add(nodeTreeJSP,c);
 		JScrollPane entryTableJSP = new JScrollPane(mEntryTable);
 		//add(entryTableJSP, c);
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mTreeWindow, entryTableJSP);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, nodeTreeJSP, entryTableJSP);
 		splitPane.setDividerLocation(500);
 		GridBagConstraints splitC = new GridBagConstraints();
 		splitC.fill = GridBagConstraints.BOTH;
