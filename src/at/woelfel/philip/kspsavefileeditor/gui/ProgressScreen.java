@@ -1,6 +1,7 @@
 package at.woelfel.philip.kspsavefileeditor.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,7 +12,8 @@ public class ProgressScreen extends JFrame {
 
 	private static JProgressBar mProgressBar;
 	
-	public ProgressScreen() {
+	public ProgressScreen(Component parent) {
+		setAlwaysOnTop(true);
 		setUndecorated(true);
 		setSize(200,40);
 		setLayout(new BorderLayout());
@@ -23,7 +25,7 @@ public class ProgressScreen extends JFrame {
 		JLabel textLabel = new JLabel("Parsing savefile...");
 		add(textLabel, BorderLayout.CENTER);
 		pack();
-		setLocationRelativeTo(null);
+		setLocationRelativeTo(parent);
 	}
 	
 	

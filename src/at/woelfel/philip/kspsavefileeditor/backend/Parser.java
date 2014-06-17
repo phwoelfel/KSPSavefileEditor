@@ -95,10 +95,7 @@ public class Parser {
 				if(isValidName(line)){
 					currentNode.setNodeName(line);
 					mode = 2;
-					ImageIcon tmpIcon = MainClass.readImage("nodes/"+line.toLowerCase() +".png");
-					if(tmpIcon != null){
-						currentNode.setIcon(tmpIcon);
-					}
+					
 					
 					Logger.log("found node name, setting mode 2: " +line);
 				}
@@ -133,11 +130,6 @@ public class Parser {
 					}
 					Entry tmp = new Entry(currentNode, key, value);
 					currentNode.addEntry(tmp);
-					
-					if("type".equals(key) && "Flag".equals(value)){
-						currentNode.setIcon(MainClass.readImage("nodes/flag.png"));
-						// will override vessel icon because it is set later
-					}
 					
 					Logger.log("found entry, adding to currentNode: " +tmp);
 				}

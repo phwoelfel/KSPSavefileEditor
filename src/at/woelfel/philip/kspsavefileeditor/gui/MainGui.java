@@ -81,12 +81,12 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Save or Craft files (sfs, txt, craft, cfg)", "sfs", "txt", "craft", "cfg");
 		mFileChooser.setFileFilter(filter);
 		
-		mProgressScreen = new ProgressScreen();
+		mProgressScreen = new ProgressScreen(this);
 		
 		// ################################## Temp Nodes ##################################
 		mRootNode = new Node("GAME", null);
 		mRootNode.setIcon(MainClass.readImage("nodes/game.png"));
-		String[] tmpNodeNames = {"ACTIONGROUPS", "ACTIONS", "CREW", "EDITOR", "EVENTS", "FLAG", "FLIGHTSTATE", "MODULE", "ORBIT", "PART", "PLANETS", "RECRUIT", "ROSTER", "SCIENCE", "TRACKINGSTATION", "VESSEL"};
+		String[] tmpNodeNames = {"ACTIONGROUPS", "ACTIONS", "CREW", "EDITOR", "EVENTS", "FLIGHTSTATE", "MODULE", "ORBIT", "PART", "PLANETS", "RECRUIT", "ROSTER", "SCIENCE", "TRACKINGSTATION", "VESSEL", "VESSELS/FLAG", "VESSELS/BASE", "VESSELS/PROBE", "VESSELS/SPACEOBJECT"};
 		for (int i = 0; i < tmpNodeNames.length; i++) {
 			String tmpName = tmpNodeNames[i];
 			Node tmpNode = new Node(tmpName, mRootNode);

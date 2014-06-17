@@ -1,16 +1,19 @@
 package at.woelfel.philip.kspsavefileeditor.backend;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
 import javax.swing.tree.TreePath;
+
+import at.woelfel.philip.kspsavefileeditor.MainClass;
 
 public class Node {
 	
 	private String mNodeName;
 	private Node mParentNode;
 	
-	private ArrayList<Entry> mEntries;
+	private Hashtable<String, Entry> mEntries;
 	private ArrayList<Node> mSubNodes;
 	
 	private String NL = System.getProperty("line.separator");
@@ -21,7 +24,7 @@ public class Node {
 	public Node(String name, Node parent) {
 		mParentNode = parent;
 		mNodeName = name;
-		mEntries = new ArrayList<Entry>();
+		mEntries = new Hashtable<String, Entry>();
 		mSubNodes = new ArrayList<Node>();
 	}
 
@@ -55,19 +58,27 @@ public class Node {
 
 
 	public ArrayList<Entry> getEntries() {
-		return mEntries;
-	}
-
-	public void setEntries(ArrayList<Entry> mEntries) {
-		this.mEntries = mEntries;
+		return new ArrayList<Entry>(mEntries.values());
 	}
 	
 	public Entry getEntry(int id){
-		return mEntries!=null?mEntries.get(id):null;
+		if(mEntries!=null){
+			ArrayList<String> keys = new ArrayList<String>(mEntries.keySet());
+			return mEntries.get(keys.get(id));
+		}
+		return null;
+	}
+	
+	public Entry getEntry(String key){
+		return mEntries!=null?mEntries.get(key):null;
+	}
+	
+	public boolean hasEntry(String key){
+		return mEntries!=null?mEntries.containsKey(key):false;
 	}
 	
 	public void addEntry(Entry entry){
-		mEntries.add(entry);
+		mEntries.put(entry.getKey(), entry);
 	}
 	
 	public void createEntry(String key, String value){
@@ -76,7 +87,7 @@ public class Node {
 	}
 	
 	public void removeEntry(Entry entry){
-		mEntries.remove(entry);
+		mEntries.remove(entry.getKey());
 	}
 	
 	public int getEntryCount(){
@@ -250,7 +261,22 @@ public class Node {
 	}
 
 	public ImageIcon getIcon() {
-		return mIcon;
+		if(mIcon!=null){
+			
+			// manually set icon, return this
+			return mIcon;
+		}
+		if("VESSEL".equals(getNodeName())){
+			// vessel --> check type
+			if (hasEntry("type")) {
+				ImageIcon tmpIcon =  MainClass.readImage("nodes/vessels/"+getEntry("type").getValue().toLowerCase() +".png");
+				if (tmpIcon != null) {
+					return tmpIcon;
+				}
+			}
+		}
+		// get icon for name
+		return MainClass.readImage("nodes/"+getNodeName().toLowerCase() +".png");
 	}
 
 	public void setIcon(ImageIcon mIcon) {
