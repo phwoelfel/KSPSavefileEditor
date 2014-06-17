@@ -81,6 +81,15 @@ public class MainGui extends JFrame implements TreeSelectionListener, ActionList
 		mFileChooser.setFileFilter(filter);
 		
 		// ################################## Temp Nodes ##################################
+		mRootNode = new Node("GAME", null);
+		mRootNode.setIcon(MainClass.readImage("nodes/game.png"));
+		String[] tmpNodeNames = {"ACTIONGROUPS", "ACTIONS", "CREW", "EDITOR", "EVENTS", "FLAG", "FLIGHTSTATE", "MODULE", "ORBIT", "PART", "PLANETS", "RECRUIT", "ROSTER", "SCIENCE", "TRACKINGSTATION", "VESSEL"};
+		for (int i = 0; i < tmpNodeNames.length; i++) {
+			String tmpName = tmpNodeNames[i];
+			Node tmpNode = new Node(tmpName, mRootNode);
+			tmpNode.setIcon(MainClass.readImage("nodes/" +tmpName.toLowerCase() +".png"));
+			mRootNode.addSubNode(tmpNode);
+		}
 		/*mRootNode = new Node("Node 0", null);
 		for(int i=0;i<10;i++){
 			mRootNode.createEntry("entry1" +((char)(97+i)), "value1" +((char)(97+i)));
