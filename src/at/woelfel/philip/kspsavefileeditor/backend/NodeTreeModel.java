@@ -1,7 +1,6 @@
 package at.woelfel.philip.kspsavefileeditor.backend;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;

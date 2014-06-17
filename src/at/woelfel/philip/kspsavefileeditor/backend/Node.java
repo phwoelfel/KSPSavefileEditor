@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import javax.swing.ImageIcon;
 import javax.swing.tree.TreePath;
 
-import at.woelfel.philip.kspsavefileeditor.MainClass;
+import at.woelfel.philip.kspsavefileeditor.Tools;
 
 public class Node {
 	
@@ -269,14 +269,14 @@ public class Node {
 		if("VESSEL".equals(getNodeName())){
 			// vessel --> check type
 			if (hasEntry("type")) {
-				ImageIcon tmpIcon =  MainClass.readImage("nodes/vessels/"+getEntry("type").getValue().toLowerCase() +".png");
+				ImageIcon tmpIcon =  Tools.readImage("nodes/vessels/"+getEntry("type").getValue().toLowerCase() +".png");
 				if (tmpIcon != null) {
 					return tmpIcon;
 				}
 			}
 		}
 		// get icon for name
-		return MainClass.readImage("nodes/"+getNodeName().toLowerCase() +".png");
+		return Tools.readImage("nodes/"+getNodeName().toLowerCase() +".png");
 	}
 
 	public void setIcon(ImageIcon mIcon) {

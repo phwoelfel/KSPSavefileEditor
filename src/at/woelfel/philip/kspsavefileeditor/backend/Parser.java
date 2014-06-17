@@ -5,13 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.ImageIcon;
-
-import at.woelfel.philip.kspsavefileeditor.MainClass;
 import at.woelfel.philip.kspsavefileeditor.gui.ProgressScreen;
 
 public class Parser {

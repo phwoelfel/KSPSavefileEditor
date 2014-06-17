@@ -4,6 +4,7 @@ import javax.swing.AbstractListModel;
 
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 
+@SuppressWarnings("serial")
 public class NodeListModel extends AbstractListModel {
 
 	private Node mNode;

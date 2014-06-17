@@ -13,10 +13,11 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import at.woelfel.philip.kspsavefileeditor.backend.Entry;
 import at.woelfel.philip.kspsavefileeditor.backend.ChangeListener;
+import at.woelfel.philip.kspsavefileeditor.backend.Entry;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 
+@SuppressWarnings("serial")
 public class EntryEditor extends JFrame implements ActionListener {
 
 	private Entry mEntry;

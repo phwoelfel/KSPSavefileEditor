@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
 
+@SuppressWarnings("serial")
 public class AboutWindow extends JFrame {
 	public AboutWindow() {
 		setTitle("About");

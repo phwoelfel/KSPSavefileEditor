@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 public class Logger {
-	private static Logger mInstance;
 	private static boolean mIsEnabled = false;
 	private static boolean mFileEnabled = false;
 	

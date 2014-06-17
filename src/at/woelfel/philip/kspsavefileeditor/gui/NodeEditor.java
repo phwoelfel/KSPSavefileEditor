@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -26,6 +25,7 @@ import at.woelfel.philip.kspsavefileeditor.backend.ChangeListener;
 import at.woelfel.philip.kspsavefileeditor.backend.Entry;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 
+@SuppressWarnings("serial")
 public class NodeEditor extends JFrame implements ActionListener {
 
 	private Node mNode;
@@ -43,7 +43,6 @@ public class NodeEditor extends JFrame implements ActionListener {
 	private JList mEntryList;
 	private NodeListModel mEntryListModel;
 	
-	private JButton mNodeEditButton;
 	private JButton mNodeDeleteButton;
 	private JButton mEntryEditButton;
 	private JButton mEntryDeleteButton;
