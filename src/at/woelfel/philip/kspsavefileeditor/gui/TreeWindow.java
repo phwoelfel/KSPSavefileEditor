@@ -8,6 +8,9 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -46,6 +49,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	private JMenuItem mRCNewEntryMenu;
 	private JMenuItem mRCEditMenu;
 	private JMenuItem mRCDeleteMenu;
+	private JMenuItem mRCSearchMenu;
 
 	/**
 	 * @param rootNode the root node of the tree
@@ -141,12 +145,23 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	/**
 	 * Searches the tree for the string and shows it if it's found.
 	 * If nothing is found false is returned.
-	 * @param search
+	 * @param search the search term
 	 * @return true if something is found, false if nothing can be found.
 	 */
 	public boolean search(String search) {
-		if (search != null && search.length() != 0) {
-			TreePath[] tp = getRootNode().multiSearch(search);
+		return search(getRootNode(), search);
+	}
+	
+	/**
+	 * Searches the tree for the string and shows it if it's found.
+	 * If nothing is found false is returned.
+	 * @param n the Node from which searching should start
+	 * @param search the search term
+	 * @return true if something is found, false if nothing can be found.
+	 */
+	public boolean search(Node n, String search) {
+		if (search != null && search.length() != 0 && n != null) {
+			TreePath[] tp = n.multiSearch(search);
 			if (tp != null && tp.length > 0) {
 				Logger.log("found something: " + tp);
 				if (tp.length > 1) {
@@ -343,6 +358,53 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 					else { // we are deleting the root node!
 							// TODO: delete the root node?
 					}
+				}
+			}
+		}
+		else if (source == mRCSearchMenu) {
+			// get selected element
+			// TreePath path = getSelectionPath();
+			String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
+			if(search != null && search.length() != 0){
+				TreePath[] paths = getSelectionPaths(); // get all selected paths
+				if(paths != null && paths.length>0){
+					// search from selection
+					ArrayList<TreePath> results = new ArrayList<TreePath>();
+					TreePath[] tp = null;
+					for (int i = 0; i < paths.length; i++) { // search through all selected paths
+						Object lpc = paths[i].getLastPathComponent();
+						System.out.println("lpc: "+lpc +", i: "+i);
+						if(lpc instanceof Node){
+							tp = ((Node)lpc).multiSearch(search);
+						}
+						else if(lpc instanceof Entry){
+							tp = ((Entry)lpc).getParentNode().multiSearch(search);
+						}
+						if(tp!=null && tp.length>0){
+							results.addAll(Arrays.asList(tp)); // add found paths to result list
+						}
+					}
+					if (results != null && results.size() > 0) {
+						Logger.log("found something: " + results);
+						if (results.size() > 1) {
+							TreePath sel = (TreePath) JOptionPane.showInputDialog(this, "Found multiple results!\nChoose one:", "Multiple Results", JOptionPane.PLAIN_MESSAGE, null, results.toArray(), null);
+							setSelectionPath(sel);
+							scrollPathToVisible(sel);
+						}
+						else {
+							setSelectionPath(results.get(0));
+							scrollPathToVisible(results.get(0));
+						}
+					}
+					else {
+						JOptionPane.showMessageDialog(this, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
+					}	
+					
+					
+				}
+				else{
+					// global search
+					search(search);
 				}
 			}
 		}
