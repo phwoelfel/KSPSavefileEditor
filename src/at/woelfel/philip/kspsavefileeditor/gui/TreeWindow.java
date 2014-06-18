@@ -10,7 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -373,7 +372,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 					TreePath[] tp = null;
 					for (int i = 0; i < paths.length; i++) { // search through all selected paths
 						Object lpc = paths[i].getLastPathComponent();
-						System.out.println("lpc: "+lpc +", i: "+i);
+						
 						if(lpc instanceof Node){
 							tp = ((Node)lpc).multiSearch(search);
 						}

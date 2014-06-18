@@ -180,7 +180,6 @@ public class MainGui extends JFrame implements ActionListener{
 	}
 	
 	private void menuClick(ActionEvent e){
-		// TODO: actionlistener for menu items
 		JMenuItem source = (JMenuItem) (e.getSource());
 		String s = "Action event detected.\n" + "\tEvent source: " + source.getText() + " (an instance of " + source.getClass().getSimpleName() + ")";
 		Logger.log(s);
