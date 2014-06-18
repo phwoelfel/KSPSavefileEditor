@@ -223,11 +223,13 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	private void createPopupMenu() {
 		mRCPopup = new JPopupMenu();
 		JMenu rcNewMenu = new JMenu("New");
+		rcNewMenu.setIcon(Tools.readImage("new.png"));
 		mRCNewNodeMenu = Tools.initializeMenuItem(rcNewMenu, "Node", this);
 		mRCNewEntryMenu = Tools.initializeMenuItem(rcNewMenu, "Entry", this);
 		mRCPopup.add(rcNewMenu);
-		mRCEditMenu = Tools.initializeMenuItem(mRCPopup, "Edit", this);
-		mRCDeleteMenu = Tools.initializeMenuItem(mRCPopup, "Delete", this);
+		mRCEditMenu = Tools.initializeMenuItem(mRCPopup, "Edit", this, Tools.readImage("edit.png"));
+		mRCDeleteMenu = Tools.initializeMenuItem(mRCPopup, "Delete", this, Tools.readImage("delete.png"));
+		mRCSearchMenu = Tools.initializeMenuItem(mRCPopup, "Search", this, Tools.readImage("search.png"));
 
 		MouseListener popupListener = new PopupListener(mRCPopup);
 		addMouseListener(popupListener);
