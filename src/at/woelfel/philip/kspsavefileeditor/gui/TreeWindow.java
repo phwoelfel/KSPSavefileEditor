@@ -50,6 +50,24 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	private JMenuItem mRCDeleteMenu;
 	private JMenuItem mRCSearchMenu;
 
+	MouseListener ml = new MouseAdapter() {
+	    public void mousePressed(MouseEvent e) {
+	        TreePath selPath = getPathForLocation(e.getX(), e.getY());
+	        if(selPath != null) {
+	           if(e.getClickCount() == 2) {
+	               Object lpc = selPath.getLastPathComponent();
+	               if(lpc instanceof Node){
+	            	   mNodeEditor.showForEdit((Node)lpc);
+	               }
+	               else if(lpc instanceof Entry){
+	            	   mEntryEditor.showForEdit((Entry)lpc);
+	               }
+	           }
+	        }
+	    }
+	};
+	
+	
 	/**
 	 * @param rootNode the root node of the tree
 	 * @param nodeTableModel the table model of the table in which the entries should be displayed
@@ -82,6 +100,8 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 
 		mNodeEditor = new NodeEditor(mEntryEditor);
 		mNodeEditor.addChangeListener(this);
+		
+		addMouseListener(ml);
 	}
 
 	/**
@@ -407,6 +427,5 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 				}
 			}
 		}
-
 	}
 }

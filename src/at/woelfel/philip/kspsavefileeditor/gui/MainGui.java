@@ -28,7 +28,10 @@ import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
 
 @SuppressWarnings("serial")
 public class MainGui extends JFrame implements ActionListener{
-	
+	/*
+	 * TODO: search & replace:
+	 * 			gefundenen elemente anzeigen und dann mit checkboxen auswaehlen welche ersetzt werden sollen
+	 */
 	private JFileChooser mFileChooser;
 	
 	private JTable mEntryTable;
