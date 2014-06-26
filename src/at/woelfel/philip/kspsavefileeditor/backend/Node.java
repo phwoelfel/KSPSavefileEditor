@@ -1,7 +1,6 @@
 package at.woelfel.philip.kspsavefileeditor.backend;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
 import javax.swing.tree.TreePath;
@@ -13,7 +12,7 @@ public class Node {
 	private String mNodeName;
 	private Node mParentNode;
 	
-	private Hashtable<String, Entry> mEntries;
+	private ArrayList<Entry> mEntries;
 	private ArrayList<Node> mSubNodes;
 	
 	private String NL = System.getProperty("line.separator");
@@ -24,7 +23,7 @@ public class Node {
 	public Node(String name, Node parent) {
 		mParentNode = parent;
 		mNodeName = name;
-		mEntries = new Hashtable<String, Entry>();
+		mEntries = new ArrayList<Entry>();
 		mSubNodes = new ArrayList<Node>();
 	}
 
@@ -58,27 +57,36 @@ public class Node {
 
 
 	public ArrayList<Entry> getEntries() {
-		return new ArrayList<Entry>(mEntries.values());
+		return mEntries;
 	}
 	
 	public Entry getEntry(int id){
 		if(mEntries!=null){
-			ArrayList<String> keys = new ArrayList<String>(mEntries.keySet());
-			return mEntries.get(keys.get(id));
+			return mEntries.get(id);
 		}
 		return null;
 	}
 	
 	public Entry getEntry(String key){
-		return mEntries!=null?mEntries.get(key):null;
+		for (Entry e : mEntries) {
+			if(e.getKey().equals(key)){
+				return e;
+			}
+		}
+		return null;
 	}
 	
 	public boolean hasEntry(String key){
-		return mEntries!=null?mEntries.containsKey(key):false;
+		for (Entry e : mEntries) {
+			if(e.getKey().equals(key)){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void addEntry(Entry entry){
-		mEntries.put(entry.getKey(), entry);
+		mEntries.add(entry);
 	}
 	
 	public void createEntry(String key, String value){
