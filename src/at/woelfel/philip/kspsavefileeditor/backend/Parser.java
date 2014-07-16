@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,10 +15,21 @@ public class Parser {
 	private ArrayList<String> mLines;
 	private int mCurrentLine = 0;
 	private int mLineCount;
-
 	
-	public Parser(String fileName){
-		this(new File(fileName));
+	/**
+	 * Constructor with contents as a String and not the filename
+	 * @param content content of a savefile
+	 * @param isContent uselsess, just to differ from Parser(String) constructor
+	 */
+	public Parser(String content, boolean isContent) {
+		if(content != null && content.length()>0){
+			mLines = new ArrayList<String>(Arrays.asList(content.split(System.getProperty("line.separator"))));
+			mLineCount = mLines.size();
+		}
+	}
+	
+	public Parser(String data){
+		this(new File(data));
 	}
 	
 	public Parser(File file) {
@@ -43,22 +55,26 @@ public class Parser {
 	}
 	
 	public Node parse(boolean hasRootNode) throws Exception{
-		Node n = null;
-		ProgressScreen.updateProgressBar(0);
-		
-		long startTime = System.currentTimeMillis();
-		if(hasRootNode){	
-			n = parseLines(null, 1);
+		if(mLines != null && mLines.size()>0){
+			
+			Node n = null;
+			ProgressScreen.updateProgressBar(0);
+			
+			long startTime = System.currentTimeMillis();
+			if(hasRootNode){	
+				n = parseLines(null, 1);
+			}
+			else{
+				//n = new Node("", null); // create a nameless root node
+				n = parseLines(null, 3); // parse with parent node present --> mode 3
+			}
+			long endTime = System.currentTimeMillis();
+			Logger.logInfo("Processing time: "+(endTime-startTime));
+	
+			
+			return n;
 		}
-		else{
-			//n = new Node("", null); // create a nameless root node
-			n = parseLines(null, 3); // parse with parent node present --> mode 3
-		}
-		long endTime = System.currentTimeMillis();
-		Logger.logInfo("Processing time: "+(endTime-startTime));
-
-		
-		return n;
+		return null;
 	}
 	
 	private synchronized Node parseLines(Node parentNode, int mode) throws Exception{
