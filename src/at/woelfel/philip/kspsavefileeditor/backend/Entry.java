@@ -1,8 +1,7 @@
 package at.woelfel.philip.kspsavefileeditor.backend;
 
-public class Entry {
+public class Entry extends TreeBaseNode{
 
-	private Node mParentNode;
 	private String mKey;
 	private String mValue;
 	
@@ -49,20 +48,6 @@ public class Entry {
 		return mKey +" = " +mValue;
 	}
 
-	public Node getParentNode() {
-		return mParentNode;
-	}
-
-	public void setParentNode(Node mParentNode) {
-		this.mParentNode = mParentNode;
-	}
-	
-	public boolean hasParentNode(){
-		if(mParentNode!=null){
-			return true;
-		}
-		return false;
-	}
 	
 	public boolean search(String search){
 		if(getKey().toLowerCase().contains(search.toLowerCase()) || getValue().toLowerCase().contains(search.toLowerCase())){

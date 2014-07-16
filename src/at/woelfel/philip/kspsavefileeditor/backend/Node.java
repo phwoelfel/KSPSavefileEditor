@@ -7,10 +7,9 @@ import javax.swing.tree.TreePath;
 
 import at.woelfel.philip.kspsavefileeditor.Tools;
 
-public class Node {
+public class Node extends TreeBaseNode {
 	
 	private String mNodeName;
-	private Node mParentNode;
 	
 	private ArrayList<Entry> mEntries;
 	private ArrayList<Node> mSubNodes;
@@ -27,8 +26,7 @@ public class Node {
 		mSubNodes = new ArrayList<Node>();
 	}
 
-	
-	
+		
 	public String getNodeName() {
 		return mNodeName;
 	}
@@ -36,25 +34,6 @@ public class Node {
 	public void setNodeName(String mNodeName) {
 		this.mNodeName = mNodeName;
 	}
-
-	
-	
-	public Node getParentNode() {
-		return mParentNode;
-	}
-
-	public void setParentNode(Node mParentNode) {
-		this.mParentNode = mParentNode;
-	}
-
-	public boolean hasParent(){
-		if(mParentNode!=null){
-			return true;
-		}
-		return false;
-	}
-	
-
 
 	public ArrayList<Entry> getEntries() {
 		return mEntries;
@@ -87,6 +66,7 @@ public class Node {
 	
 	public void addEntry(Entry entry){
 		mEntries.add(entry);
+		entry.setParentNode(this);
 	}
 	
 	public void createEntry(String key, String value){
@@ -119,6 +99,7 @@ public class Node {
 	public void addSubNode(Node node){
 		if(mSubNodes!=null){
 			mSubNodes.add(node);
+			node.setParentNode(this);
 		}
 	}
 	
