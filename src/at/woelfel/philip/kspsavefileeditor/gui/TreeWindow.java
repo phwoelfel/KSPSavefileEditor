@@ -49,23 +49,6 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	private JMenuItem mRCEditMenu;
 	private JMenuItem mRCDeleteMenu;
 	private JMenuItem mRCSearchMenu;
-
-	MouseListener ml = new MouseAdapter() {
-	    public void mousePressed(MouseEvent e) {
-	        TreePath selPath = getPathForLocation(e.getX(), e.getY());
-	        if(selPath != null) {
-	           if(e.getClickCount() == 2) {
-	               Object lpc = selPath.getLastPathComponent();
-	               if(lpc instanceof Node){
-	            	   mNodeEditor.showForEdit((Node)lpc);
-	               }
-	               else if(lpc instanceof Entry){
-	            	   mEntryEditor.showForEdit((Entry)lpc);
-	               }
-	           }
-	        }
-	    }
-	};
 	
 	
 	/**
@@ -100,8 +83,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 
 		mNodeEditor = new NodeEditor(mEntryEditor);
 		mNodeEditor.addChangeListener(this);
-		
-		addMouseListener(ml);
+
 	}
 
 	/**
@@ -277,28 +259,43 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 		}
 
 		public void mousePressed(MouseEvent e) {
-			showPopup(e);
+			if(!showPopup(e)){
+				TreePath selPath = getPathForLocation(e.getX(), e.getY());
+				if (selPath != null) {
+					if (e.getClickCount() == 2) {
+						Object lpc = selPath.getLastPathComponent();
+						if (lpc instanceof Node) {
+							mNodeEditor.showForEdit((Node) lpc);
+						}
+						else if (lpc instanceof Entry) {
+							mEntryEditor.showForEdit((Entry) lpc);
+						}
+					}
+				}
+			}
 		}
 
 		public void mouseReleased(MouseEvent e) {
 			showPopup(e);
 		}
 
-		private void showPopup(MouseEvent e) {
+		private boolean showPopup(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				int x = e.getX();
 				int y = e.getY();
 				JTree tree = (JTree) e.getSource();
 				TreePath path = tree.getPathForLocation(x, y);
 				if (path == null)
-					return;
+					return false;
 
 				if (tree.getSelectionCount() <= 1) { // if we have nothing or only one node selected, set selection to current item
 					tree.setSelectionPath(path);
 				}
 
 				popup.show(e.getComponent(), e.getX(), e.getY());
+				return true;
 			}
+			return false;
 		}
 	}
 
