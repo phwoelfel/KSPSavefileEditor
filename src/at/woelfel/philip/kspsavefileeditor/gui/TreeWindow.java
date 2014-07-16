@@ -499,7 +499,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 						} catch (Exception e) {
 							ProgressScreen.hideProgress();
 							e.printStackTrace();
-							JOptionPane.showMessageDialog(TreeWindow.this, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(TreeWindow.this, "Error parsing clipboard!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						ProgressScreen.hideProgress();
 					}
@@ -507,9 +507,9 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 				th.start();
 			}
 		} catch (UnsupportedFlavorException e1) {
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(TreeWindow.this, "Unsupported clipboard data!\n", "Error", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(TreeWindow.this, "Error:" +e1.getLocalizedMessage() +"!\n", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
