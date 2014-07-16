@@ -54,6 +54,72 @@ public class Parser {
 		mLineCount = mLines.size();
 	}
 	
+	public ArrayList<TreeBaseNode> parseClipBoard() throws Exception{
+		/*
+		 * difference to parse:
+		 * 	doesn't need a parent node
+		 * 	can have multiple nodes on root level
+		 * 	can have entries without a parent node
+		 * 
+		 * only root level is different, if node is found on root level can be parsed using normal parseLines
+		 */
+		ArrayList<TreeBaseNode> data = new ArrayList<TreeBaseNode>();
+		for (; mCurrentLine < mLineCount; mCurrentLine++) {
+			
+			if(mCurrentLine%1000==0){
+				// update every 1000 lines
+				int percent = (mCurrentLine*100)/mLineCount;
+				ProgressScreen.updateProgressBar(percent);
+			}
+			
+			String line = mLines.get(mCurrentLine).trim();
+			if(line.length()==0){
+				// empty line, skipping
+				continue;
+			}
+			if(line.startsWith("//")){
+				// comment, skipping
+				continue;
+			}
+			if(line.contains("//")){
+				// comment not at the beginning, cut comment
+				line = line.substring(0, line.indexOf("//")).trim();
+				Logger.log("found comment! new line: " +line);
+			}
+			Logger.log("current Line(" +mCurrentLine +"): \"" +line +"\"");
+			
+			// entry or valid name possible
+			if(line.contains("=")){ // entry
+				String[] kv = line.split("=");
+				String key = "";
+				String value = "";
+				if(kv.length == 1){
+					key = kv[0].trim(); // it is allowed to have "key =" without a value
+				}
+				else if(kv.length > 1){
+					key = kv[0].trim(); 
+					value = kv[1].trim();
+				}
+				else{
+					throw new Exception("Couldn't split Entry at line "+mCurrentLine +": " +line);
+				}
+				Entry tmp = new Entry(null, key, value);
+				data.add(tmp);
+				
+				Logger.log("found entry, adding to data: " +tmp);
+			}
+			else if(isValidName(line)){
+				Logger.log("found valid name, parsing subnode: " +line +"\n---------------------------------------------------------------------------------------------------------");
+				data.add(parseLines(null, 1));
+			}
+			else{
+				throw new Exception("Found invalid line at "+mCurrentLine +": " +line +"\nExpected an Entry or a valid Node name!");
+			}
+		}
+		
+		return data;
+	}
+	
 	public Node parse(boolean hasRootNode) throws Exception{
 		if(mLines != null && mLines.size()>0){
 			
@@ -77,14 +143,13 @@ public class Parser {
 		return null;
 	}
 	
-	private synchronized Node parseLines(Node parentNode, int mode) throws Exception{
+	private Node parseLines(Node parentNode, int mode) throws Exception{
 		Node currentNode = new Node("", parentNode);
 		for (; mCurrentLine < mLineCount; mCurrentLine++) {
 			
 			if(mCurrentLine%1000==0){
 				// update every 1000 lines
 				int percent = (mCurrentLine*100)/mLineCount;
-				//Logger.logInfo("percent: " +percent);
 				ProgressScreen.updateProgressBar(percent);
 			}
 			
@@ -99,7 +164,7 @@ public class Parser {
 			}
 			if(line.contains("//")){
 				// comment not at the beginning, cut comment
-				line = line.substring(0, line.indexOf("//"));
+				line = line.substring(0, line.indexOf("//")).trim();
 				Logger.log("found comment! new line: " +line);
 			}
 			Logger.log("current Line(" +mCurrentLine +"): \"" +line +"\" mode: " +mode);

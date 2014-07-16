@@ -1,7 +1,12 @@
 package at.woelfel.philip.kspsavefileeditor.gui;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -11,12 +16,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -30,6 +37,7 @@ import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTreeModel;
 import at.woelfel.philip.kspsavefileeditor.backend.Parser;
+import at.woelfel.philip.kspsavefileeditor.backend.TreeBaseNode;
 
 @SuppressWarnings("serial")
 public class TreeWindow extends JTree implements TreeSelectionListener, ChangeListener, ActionListener {
@@ -49,6 +57,8 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	private JMenuItem mRCEditMenu;
 	private JMenuItem mRCDeleteMenu;
 	private JMenuItem mRCSearchMenu;
+	private JMenuItem mRCCopyMenu;
+	private JMenuItem mRCPasteMenu;
 	
 	
 	/**
@@ -246,11 +256,29 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 		mRCEditMenu = Tools.initializeMenuItem(mRCPopup, "Edit", this, Tools.readImage("edit.png"));
 		mRCDeleteMenu = Tools.initializeMenuItem(mRCPopup, "Delete", this, Tools.readImage("delete.png"));
 		mRCSearchMenu = Tools.initializeMenuItem(mRCPopup, "Search", this, Tools.readImage("search.png"));
-
+		mRCCopyMenu = Tools.initializeMenuItem(mRCPopup, "Copy", this, Tools.readImage("copy.png"));
+		mRCPasteMenu = Tools.initializeMenuItem(mRCPopup, "Paste", this, Tools.readImage("paste.png"));
+		
 		MouseListener popupListener = new PopupListener(mRCPopup);
 		addMouseListener(popupListener);
+		
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"copy");
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"paste");
+		getActionMap().put("copy", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doCopy();
+			}
+		});
+		getActionMap().put("paste", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doPaste();
+			}
+		});
 	}
-
+	
+	
 	class PopupListener extends MouseAdapter {
 		JPopupMenu popup;
 
@@ -423,6 +451,84 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 					search(search);
 				}
 			}
+		}
+		else if (source == mRCCopyMenu) {
+			doCopy();
+		}
+		else if (source == mRCPasteMenu){
+			doPaste();
+		}
+	}
+	
+	private void doPaste(){
+		Logger.log("doPaste()");
+		try {
+			final TreePath path = getSelectionPath();
+			if (path != null) {
+				String data = (String) (Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor));
+				final Parser p = new Parser(data, true);
+				ProgressScreen.showProgress("Parsing clipboard data...", this);
+				ProgressScreen.updateProgressBar(0);
+				Thread th = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							ArrayList<TreeBaseNode> data = p.parseClipBoard();
+							Object o = path.getLastPathComponent();
+							Node parent = null;
+							if(o instanceof Node){
+								parent = (Node)o;
+							}
+							else if(o instanceof Entry){
+								parent = ((Entry)o).getParentNode();
+							} 
+							if(parent != null){
+								for (TreeBaseNode n : data) {
+									if(n!=null){
+										if(n instanceof Node){
+											parent.addSubNode((Node)n);
+											onNodeAdded((Node)n);
+										}
+										else if(n instanceof Entry){
+											parent.addEntry((Entry)n);
+											onEntryAdded((Entry)n);
+										}
+									}
+								}
+							}
+						} catch (Exception e) {
+							ProgressScreen.hideProgress();
+							e.printStackTrace();
+							JOptionPane.showMessageDialog(TreeWindow.this, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+						}
+						ProgressScreen.hideProgress();
+					}
+				});
+				th.start();
+			}
+		} catch (UnsupportedFlavorException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	private void doCopy(){
+		Logger.log("doCopy()");
+		TreePath[] paths = getSelectionPaths(); // get all selected paths
+		if(paths != null && paths.length>0){
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < paths.length; i++) {
+				Object o = paths[i].getLastPathComponent();
+				if(o instanceof Node){
+					sb.append(((Node)o).print(0));
+				}
+				else{
+					sb.append(o);
+					sb.append(System.getProperty("line.separator"));
+				}
+			}
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
 		}
 	}
 }
