@@ -8,8 +8,11 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.FileNotFoundException;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -27,7 +30,7 @@ import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
 
 @SuppressWarnings("serial")
-public class MainGui extends JFrame implements ActionListener{
+public class MainGui extends JFrame implements ActionListener, ItemListener{
 	/*
 	 * TODO: search & replace:
 	 * 			gefundenen elemente anzeigen und dann mit checkboxen auswaehlen welche ersetzt werden sollen
@@ -46,8 +49,8 @@ public class MainGui extends JFrame implements ActionListener{
 	private JMenuItem mEditSearchItem;
 	
 	private JMenuItem mAboutInfoItem;
-	private JMenuItem mAboutDebugItem;
-	private JMenuItem mAboutFileDebugItem;
+	private JCheckBoxMenuItem mAboutDebugItem;
+	private JCheckBoxMenuItem mAboutFileDebugItem;
 	
 
 	
@@ -130,8 +133,8 @@ public class MainGui extends JFrame implements ActionListener{
 		
 		JMenu aboutMenu = new JMenu("About");
 		mAboutInfoItem = Tools.initializeMenuItem(aboutMenu, "Info", this, Tools.readImage("info.png"));
-		mAboutDebugItem = Tools.initializeMenuItem(aboutMenu, "Enable Debug", this);
-		mAboutFileDebugItem = Tools.initializeMenuItem(aboutMenu, "Enable File Debug", this);
+		mAboutDebugItem = Tools.initializeCheckboxMenuItem(aboutMenu, "Enable Debug", this);
+		mAboutFileDebugItem = Tools.initializeCheckboxMenuItem(aboutMenu, "Enable File Debug", this);
 		menuBar.add(aboutMenu);
 		setJMenuBar(menuBar);
 		
@@ -190,36 +193,6 @@ public class MainGui extends JFrame implements ActionListener{
 		
 		if(source == mAboutInfoItem){
 			new AboutWindow();
-		}
-		else if(source == mAboutDebugItem){
-			if(Logger.isEnabled()){
-				Logger.setEnabled(false);
-				mAboutDebugItem.setText("Enable Debug");
-			}
-			else{
-				Logger.setEnabled(true);
-				mAboutDebugItem.setText("Disable Debug");
-			}
-		}
-		else if(source == mAboutFileDebugItem){
-			if(Logger.isFileEnabled()){
-				Logger.setFileEnabled(false);
-				mAboutFileDebugItem.setText("Enable File Debug");
-			}
-			else{
-				mFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				int returnVal = mFileChooser.showSaveDialog(this);
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					try {
-						Logger.setLogFile(mFileChooser.getSelectedFile());
-					} catch (FileNotFoundException e1) {
-						JOptionPane.showMessageDialog(this, "Error creating logfile!\n"+e1.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-				Logger.setFileEnabled(true);
-				mAboutFileDebugItem.setText("Disable File Debug");
-				
-			}
 		}
 		else if (source == mFileOpenSFSItem) {
 			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
@@ -290,6 +263,39 @@ public class MainGui extends JFrame implements ActionListener{
 				JOptionPane.showMessageDialog(this, "Please select a tree window to search!", "Error", JOptionPane.WARNING_MESSAGE);
 			}
 		}
+	}
+
+
+
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		if(e.getSource() == mAboutDebugItem){
+			if(e.getStateChange() == ItemEvent.DESELECTED){
+				Logger.setEnabled(false);
+			}
+			else{
+				Logger.setEnabled(true);
+			}
+		}
+		else if(e.getSource() == mAboutFileDebugItem){
+			if(e.getStateChange() == ItemEvent.DESELECTED){
+				Logger.setFileEnabled(false);
+			}
+			else{
+				mFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				int returnVal = mFileChooser.showSaveDialog(this);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					try {
+						Logger.setLogFile(mFileChooser.getSelectedFile());
+						Logger.setFileEnabled(true);
+					} catch (FileNotFoundException e1) {
+						JOptionPane.showMessageDialog(this, "Error creating logfile!\n"+e1.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		}
+		
 	}
 	
 	
