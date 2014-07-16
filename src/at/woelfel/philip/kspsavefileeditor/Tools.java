@@ -1,11 +1,13 @@
 package at.woelfel.philip.kspsavefileeditor;
 
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 
@@ -48,6 +50,21 @@ public class Tools {
 	public static JMenuItem initializeMenuItem(JComponent parent, String text, ActionListener al) {
 		JMenuItem item = new JMenuItem(text);
 		item.addActionListener(al);
+		parent.add(item);
+		return item;
+	}
+	
+	
+	public static JCheckBoxMenuItem initializeCheckboxMenuItem(JComponent parent, String text, ItemListener al, ImageIcon img) {
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(text, img);
+		item.addItemListener(al);
+		parent.add(item);
+		return item;
+	}
+
+	public static JCheckBoxMenuItem initializeCheckboxMenuItem(JComponent parent, String text, ItemListener al) {
+		JCheckBoxMenuItem item = new JCheckBoxMenuItem(text);
+		item.addItemListener(al);
 		parent.add(item);
 		return item;
 	}
