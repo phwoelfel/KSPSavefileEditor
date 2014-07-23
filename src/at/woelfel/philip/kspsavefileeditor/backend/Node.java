@@ -75,7 +75,7 @@ public class Node extends TreeBaseNode {
 	}
 	
 	public void removeEntry(Entry entry){
-		mEntries.remove(entry.getKey());
+		mEntries.remove(entry);
 	}
 	
 	public int getEntryCount(){
