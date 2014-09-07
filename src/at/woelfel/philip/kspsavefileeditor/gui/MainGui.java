@@ -28,6 +28,7 @@ import at.woelfel.philip.kspsavefileeditor.Tools;
 import at.woelfel.philip.kspsavefileeditor.backend.Logger;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
+import at.woelfel.philip.kspsavefileeditor.backend.Settings;
 
 @SuppressWarnings("serial")
 public class MainGui extends JFrame implements ActionListener, ItemListener{
@@ -45,6 +46,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 	private JMenuItem mFileOpenSFSItem;
 	private JMenuItem mFileOpenOtherItem;
 	private JMenuItem mFileSaveItem;
+	private JMenuItem mFileSettingsItem;
 	
 	private JMenuItem mEditSearchItem;
 	
@@ -64,7 +66,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 	public MainGui() {
 		Logger.setEnabled(false);
 		
-		mFileChooser = new JFileChooser();
+		mFileChooser = new JFileChooser(Settings.getString(Settings.PREF_KSP_DIR, System.getProperty("user.home")));
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Save or Craft files (sfs, txt, craft, cfg)", "sfs", "txt", "craft", "cfg");
 		mFileChooser.setFileFilter(filter);
 		
@@ -125,6 +127,8 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 		mFileOpenSFSItem = Tools.initializeMenuItem(fileMenu, "Open...", this, Tools.readImage("load.png"));
 		mFileOpenOtherItem = Tools.initializeMenuItem(fileMenu, "Open Craft...", this, Tools.readImage("load.png"));
 		mFileSaveItem = Tools.initializeMenuItem(fileMenu, "Save...", this, Tools.readImage("save.png"));
+		fileMenu.addSeparator();
+		mFileSettingsItem = Tools.initializeMenuItem(fileMenu, "KSP Folder...", this);
 		menuBar.add(fileMenu);
 		
 		JMenu editMenu = new JMenu("Edit");
@@ -247,6 +251,13 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 					JOptionPane.showMessageDialog(this, "Please select a tree window to save the file!", "Error", JOptionPane.WARNING_MESSAGE);
 				}
 
+			}
+		}
+		else if (source == mFileSettingsItem) {
+			mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int returnVal = mFileChooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				Settings.setString(Settings.PREF_KSP_DIR, mFileChooser.getSelectedFile().getAbsolutePath());
 			}
 		}
 		else if (source == mEditSearchItem) {
