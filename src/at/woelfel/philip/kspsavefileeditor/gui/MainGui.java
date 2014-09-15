@@ -24,11 +24,11 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import at.woelfel.philip.kspsavefileeditor.Tools;
-import at.woelfel.philip.kspsavefileeditor.backend.Logger;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
 import at.woelfel.philip.kspsavefileeditor.backend.Settings;
+import at.woelfel.philip.tools.Logger;
+import at.woelfel.philip.tools.Tools;
 
 @SuppressWarnings("serial")
 public class MainGui extends JFrame implements ActionListener, ItemListener{
@@ -237,7 +237,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 		else if (source == mFileSaveItem) {
 			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
 			
-			mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = mFileChooser.showSaveDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				Logger.log("You chose to save this file: " + mFileChooser.getSelectedFile().getName());

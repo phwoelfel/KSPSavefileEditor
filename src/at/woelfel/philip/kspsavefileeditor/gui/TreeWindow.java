@@ -29,15 +29,15 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import at.woelfel.philip.kspsavefileeditor.Tools;
 import at.woelfel.philip.kspsavefileeditor.backend.ChangeListener;
 import at.woelfel.philip.kspsavefileeditor.backend.Entry;
-import at.woelfel.philip.kspsavefileeditor.backend.Logger;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTreeModel;
 import at.woelfel.philip.kspsavefileeditor.backend.Parser;
 import at.woelfel.philip.kspsavefileeditor.backend.TreeBaseNode;
+import at.woelfel.philip.tools.Logger;
+import at.woelfel.philip.tools.Tools;
 
 @SuppressWarnings("serial")
 public class TreeWindow extends JTree implements TreeSelectionListener, ChangeListener, ActionListener {

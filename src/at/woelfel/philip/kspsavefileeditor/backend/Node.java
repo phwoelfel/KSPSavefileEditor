@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.tree.TreePath;
 
-import at.woelfel.philip.kspsavefileeditor.Tools;
+import at.woelfel.philip.tools.Tools;
 
 public class Node extends TreeBaseNode {
 	

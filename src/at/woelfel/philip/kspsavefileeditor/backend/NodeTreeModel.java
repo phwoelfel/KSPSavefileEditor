@@ -7,6 +7,8 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import at.woelfel.philip.tools.Logger;
+
 public class NodeTreeModel implements TreeModel {
 
 	private Node mRootNode;

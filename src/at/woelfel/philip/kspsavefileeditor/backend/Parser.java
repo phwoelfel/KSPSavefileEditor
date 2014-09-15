@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import at.woelfel.philip.kspsavefileeditor.gui.ProgressScreen;
+import at.woelfel.philip.tools.Logger;
 
 public class Parser {
 	private ArrayList<String> mLines;
