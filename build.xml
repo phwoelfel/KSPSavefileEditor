@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_run_jar" name="KSPSaveFileEditor">
 
-	<property name="project.version" value="0.1.8a" />
+	<property name="project.version" value="0.1.9" />
 	<property name="project.name" value="KSPSaveFileEditor" />
 
 	<target name="create_run_jar">
