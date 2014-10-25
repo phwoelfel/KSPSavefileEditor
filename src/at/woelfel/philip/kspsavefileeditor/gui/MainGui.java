@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -236,22 +237,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 		}
 		else if (source == mFileSaveItem) {
 			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
-			
-			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			int returnVal = mFileChooser.showSaveDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				Logger.log("You chose to save this file: " + mFileChooser.getSelectedFile().getName());
-				if(curWindow == mPrimaryTreeWindow){
-					mPrimaryTreeWindow.save(mFileChooser.getSelectedFile());
-				}
-				else if(curWindow == mSecondaryTreeWindow){
-					mSecondaryTreeWindow.save(mFileChooser.getSelectedFile());
-				}
-				else{
-					JOptionPane.showMessageDialog(this, "Please select a tree window to save the file!", "Error", JOptionPane.WARNING_MESSAGE);
-				}
-
-			}
+			showSaveDialog(curWindow);
 		}
 		else if (source == mFileSettingsItem) {
 			mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -276,7 +262,40 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 		}
 	}
 
+	protected void showSaveDialog(Component curWindow){
+		mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		int returnVal = mFileChooser.showSaveDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File f = mFileChooser.getSelectedFile();
+			Logger.log("You chose to save this file: " + f.getName());
+			if(f.exists()){
+				int res = JOptionPane.showConfirmDialog(this, "File exists! Do you want to overwrite the file?", "File exists!", JOptionPane.YES_NO_CANCEL_OPTION);
+				if(res == JOptionPane.YES_OPTION){
+					doSave(f, curWindow);
+				}
+				else if(res == JOptionPane.NO_OPTION){
+					// user choose no --> show save dialog again
+					showSaveDialog(curWindow);
+				}
+				// cancel --> do nothing
+			}
+			else{
+				doSave(f, curWindow);
+			}
+		}
+	}
 
+	protected void doSave(File f, Component curWindow){
+		if(curWindow == mPrimaryTreeWindow){
+			mPrimaryTreeWindow.save(mFileChooser.getSelectedFile());
+		}
+		else if(curWindow == mSecondaryTreeWindow){
+			mSecondaryTreeWindow.save(mFileChooser.getSelectedFile());
+		}
+		else{
+			JOptionPane.showMessageDialog(this, "Please select a tree window to save the file!", "Error", JOptionPane.WARNING_MESSAGE);
+		}
+	}
 
 
 	@Override
