@@ -45,6 +45,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	// private JTree mNodeTree;
 	private NodeTreeModel mNodeTreeModel;
 	private NodeTableModel mNodeTableModel;
+	private File mFile;
 
 	private Node mRootNode;
 
@@ -61,18 +62,34 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	private JMenuItem mRCPasteMenu;
 	
 	
+	protected int mTabIndex;
+	
 	/**
-	 * @param rootNode the root node of the tree
-	 * @param nodeTableModel the table model of the table in which the entries should be displayed
+	 * @param f The File which should be loaded.
+	 * @param hasRoot If the file that should be loaded has a root node or not (generally save files have one, crafts don't have a root node).
+	 * @param nodeTableModel The table model of the table in which the entries should be displayed.
+	 */
+	public TreeWindow(File f, boolean hasRoot, NodeTableModel nodeTableModel){
+		this(null, nodeTableModel);
+		load(f, hasRoot);
+	}
+	
+	/**
+	 * @param rootNode The root node of the tree.
+	 * @param nodeTableModel The table model of the table in which the entries should be displayed.
 	 */
 	public TreeWindow(Node rootNode, NodeTableModel nodeTableModel) {
 		super();
 
 		mRootNode = rootNode;
+		if(mRootNode != null){
+			mRootNode.isExpanded(true);
+		}
 		mNodeTableModel = nodeTableModel;
 		mNodeTableModel.addChangeListener(this);
 		
 		mNodeTreeModel = new NodeTreeModel(mRootNode);
+		addTreeWillExpandListener(mNodeTreeModel);
 		setModel(mNodeTreeModel);
 		addTreeSelectionListener(this);
 		setEditable(true);
@@ -102,6 +119,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	 * @param hasRoot if the file has a root node or not
 	 */
 	public void load(File f, final boolean hasRoot) {
+		mFile = f;
 		final Parser p = new Parser(f);
 		ProgressScreen.showProgress("Parsing savefile...", this);
 		ProgressScreen.updateProgressBar(0);
@@ -119,12 +137,21 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 		});
 		th.start();
 	}
+	
+	/**
+	 * Saves the current tree to the file it was loaded from.
+	 */
+	public void save(){
+		if(mFile!=null){
+			saveAs(mFile);
+		}
+	}
 
 	/**
 	 * Saves the current tree to the File.
 	 * @param f
 	 */
-	public void save(final File f) {
+	public void saveAs(final File f) {
 		ProgressScreen.showProgress("Saving file...", this);
 		ProgressScreen.updateProgressBar(0);
 		Thread th = new Thread(new Runnable() {
@@ -204,8 +231,11 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	}
 
 	public void setRootNode(Node mRootNode) {
-		this.mRootNode = mRootNode;
-		mNodeTreeModel.setRootNode(mRootNode);
+		if(mRootNode!=null){
+			this.mRootNode = mRootNode;
+			mRootNode.isExpanded(true);
+			mNodeTreeModel.setRootNode(mRootNode);
+		}
 	}
 
 	@Override
@@ -536,5 +566,17 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 			}
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
 		}
+	}
+	
+	public File getFile(){
+		return mFile;
+	}
+
+	public int getTabIndex() {
+		return mTabIndex;
+	}
+
+	public void setTabIndex(int tabIndex) {
+		this.mTabIndex = tabIndex;
 	}
 }

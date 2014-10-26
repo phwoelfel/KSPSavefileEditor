@@ -34,6 +34,8 @@ public class Node extends TreeBaseNode {
 	public void setNodeName(String mNodeName) {
 		this.mNodeName = mNodeName;
 	}
+	
+	
 
 	public ArrayList<Entry> getEntries() {
 		return mEntries;
@@ -251,7 +253,6 @@ public class Node extends TreeBaseNode {
 
 	public ImageIcon getIcon() {
 		if(mIcon!=null){
-			
 			// manually set icon, return this
 			return mIcon;
 		}

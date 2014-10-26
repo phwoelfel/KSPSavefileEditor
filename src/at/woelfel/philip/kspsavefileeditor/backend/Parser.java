@@ -147,7 +147,6 @@ public class Parser {
 	private Node parseLines(Node parentNode, int mode) throws Exception{
 		Node currentNode = new Node("", parentNode);
 		for (; mCurrentLine < mLineCount; mCurrentLine++) {
-			
 			if(mCurrentLine%1000==0){
 				// update every 1000 lines
 				int percent = (mCurrentLine*100)/mLineCount;
@@ -173,8 +172,6 @@ public class Parser {
 				if(isValidName(line)){
 					currentNode.setNodeName(line);
 					mode = 2;
-					
-					
 					Logger.log("found node name, setting mode 2: " +line);
 				}
 				else{

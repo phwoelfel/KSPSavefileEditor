@@ -5,6 +5,15 @@ package at.woelfel.philip.kspsavefileeditor.backend;
  */
 public class TreeBaseNode {
 	protected Node mParentNode;
+	protected boolean mIsExpanded=false;
+	
+	public void isExpanded(boolean isExpanded){
+		mIsExpanded = isExpanded;
+	}
+	
+	public boolean isExpanded(){
+		return mIsExpanded;
+	}
 	
 	public Node getParentNode() {
 		return mParentNode;

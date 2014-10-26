@@ -2,14 +2,17 @@ package at.woelfel.philip.kspsavefileeditor.backend;
 
 import java.util.ArrayList;
 
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import at.woelfel.philip.tools.Logger;
 
-public class NodeTreeModel implements TreeModel {
+public class NodeTreeModel implements TreeModel, TreeWillExpandListener {
 
 	private Node mRootNode;
 	private ArrayList<TreeModelListener> mTreeListener;
@@ -39,7 +42,9 @@ public class NodeTreeModel implements TreeModel {
 	public int getChildCount(Object parent) {
 		if(parent != null && parent instanceof Node){
 			Node n = (Node)parent;
-			return n.getSubNodeCount()+n.getEntryCount(); // just add subnode and entry count
+			if(n.isExpanded()){
+				return n.getSubNodeCount()+n.getEntryCount(); // just add subnode and entry count
+			}
 		}
 		return 0;
 		
@@ -152,6 +157,23 @@ public class NodeTreeModel implements TreeModel {
 	public void setRootNode(Node mRootNode) {
 		this.mRootNode = mRootNode;
 		fireTreeStructureChanged(mRootNode);
+	}
+
+
+	@Override
+	public void treeWillCollapse(TreeExpansionEvent e) throws ExpandVetoException {
+	}
+
+
+	@Override
+	public void treeWillExpand(TreeExpansionEvent e) throws ExpandVetoException {
+		TreePath tp = e.getPath();
+		if(tp!=null){
+			TreeBaseNode lpc = (TreeBaseNode) tp.getLastPathComponent();
+			if(lpc!=null){
+				lpc.isExpanded(true);
+			}
+		}
 	}
 
 }

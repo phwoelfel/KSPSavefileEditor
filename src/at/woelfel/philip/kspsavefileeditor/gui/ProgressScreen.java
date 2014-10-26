@@ -28,8 +28,8 @@ public class ProgressScreen extends JFrame {
 		mLabel = new JLabel(label);
 		add(mLabel, BorderLayout.CENTER);
 		
-		setLocationRelativeTo(parent);
 		pack();
+		setLocationRelativeTo(parent);
 	}
 	
 	
@@ -39,6 +39,7 @@ public class ProgressScreen extends JFrame {
 		}
 		else{
 			mInstance.setLabel(label);
+			mInstance.pack();
 			mInstance.setLocationRelativeTo(parent);
 		}
 		mInstance.setVisible(true);

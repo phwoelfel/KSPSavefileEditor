@@ -12,6 +12,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -24,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -44,9 +47,9 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 	 */
 	private JFileChooser mFileChooser;
 	
+	private JTabbedPane mTabPane;
 	private JTable mEntryTable;
-	private TreeWindow mPrimaryTreeWindow;
-	private TreeWindow mSecondaryTreeWindow;
+	private ArrayList<TreeWindow> mTreeWindows;
 	private JLabel mPathLabel;
 	
 	
@@ -61,13 +64,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 	private JCheckBoxMenuItem mAboutDebugItem;
 	private JCheckBoxMenuItem mAboutFileDebugItem;
 	
-
-	
 	private NodeTableModel mNodeTableModel;
-	
-	
-	private Node mPrimaryRootNode;
-	private Node mSecondaryRootNode;
 
 	
 	public MainGui() {
@@ -79,22 +76,15 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		
 			
 		// ################################## Temp Nodes ##################################
-		mPrimaryRootNode = new Node("GAME", null);
-		mPrimaryRootNode.setIcon(Tools.readImage("nodes/game.png"));
+		Node mTempNode;
+		mTempNode = new Node("GAME", null);
+		mTempNode.setIcon(Tools.readImage("nodes/game.png"));
 		String[] tmpNodeNames = {"ACTIONGROUPS", "ACTIONS", "CREW", "EDITOR", "EVENTS", "FLIGHTSTATE", "MODULE", "ORBIT", "PART", "PLANETS", "RECRUIT", "ROSTER", "SCIENCE", "TRACKINGSTATION", "VESSEL", "VESSELS/FLAG", "VESSELS/BASE", "VESSELS/PROBE", "VESSELS/SPACEOBJECT"};
 		for (int i = 0; i < tmpNodeNames.length; i++) {
 			String tmpName = tmpNodeNames[i];
-			Node tmpNode = new Node(tmpName, mPrimaryRootNode);
+			Node tmpNode = new Node(tmpName, mTempNode);
 			tmpNode.setIcon(Tools.readImage("nodes/" +tmpName.toLowerCase() +".png"));
-			mPrimaryRootNode.addSubNode(tmpNode);
-		}
-		mSecondaryRootNode = new Node("GAME", null);
-		mSecondaryRootNode.setIcon(Tools.readImage("nodes/game.png"));
-		for (int i = 0; i < tmpNodeNames.length; i++) {
-			String tmpName = tmpNodeNames[i];
-			Node tmpNode = new Node(tmpName, mPrimaryRootNode);
-			tmpNode.setIcon(Tools.readImage("nodes/" +tmpName.toLowerCase() +".png"));
-			mSecondaryRootNode.addSubNode(tmpNode);
+			mTempNode.addSubNode(tmpNode);
 		}
 		/*mRootNode = new Node("Node 0", null);
 		for(int i=0;i<10;i++){
@@ -155,20 +145,11 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		mEntryTable = new JTable(mNodeTableModel);
 		JScrollPane entryTableJSP = new JScrollPane(mEntryTable);
 		
-		mPrimaryTreeWindow = new TreeWindow(mPrimaryRootNode, mNodeTableModel);
-		mPrimaryTreeWindow.addTreeSelectionListener(this);
-		JScrollPane primaryTreeJSP = new JScrollPane(mPrimaryTreeWindow);
-		mSecondaryTreeWindow = new TreeWindow(mSecondaryRootNode, mNodeTableModel);
-		mSecondaryTreeWindow.addTreeSelectionListener(this);
-		JScrollPane secondaryTreeJSP = new JScrollPane(mSecondaryTreeWindow);
+		mTabPane = new JTabbedPane();
+		mTreeWindows = new ArrayList<TreeWindow>();
+		addTreeWindow(mTempNode);
 		
-		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, primaryTreeJSP, secondaryTreeJSP);
-		mainSplitPane.setDividerLocation((screen.width/4)*3); // set to 3/4 of screen width
-		
-		
-		
-				
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, entryTableJSP);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mTabPane, entryTableJSP);
 		splitPane.setDividerLocation((screen.height/3)*2); // set to 2/3 of screen height
 		add(splitPane, BorderLayout.CENTER);
 		
@@ -176,7 +157,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		mPathLabel = new JLabel("Path: ");
 		JPanel pathPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pathPanel.add(mPathLabel);
-		add(pathPanel, BorderLayout.NORTH);
+		add(new JScrollPane(pathPanel), BorderLayout.NORTH);
 		
 		
 		//add(nodeTreeJSP,c);
@@ -186,12 +167,37 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		setVisible(true);
 	}
 
+	public void addTreeWindow(Node n){
+		TreeWindow tmpTW = new TreeWindow(n, mNodeTableModel);
+		mTreeWindows.add(tmpTW);
+		tmpTW.addTreeSelectionListener(this);
+		JScrollPane treeJSP = new JScrollPane(tmpTW);
+		mTabPane.addTab(n.getNodeName(), Tools.readImage("rocket.png"), treeJSP);
+		mTabPane.setSelectedComponent(treeJSP);
+		
+		int index = mTabPane.getSelectedIndex();
+		mTabPane.setTabComponentAt(index, new CloseableTab(mTabPane));
+		tmpTW.setTabIndex(index);
+	}
+	
+	public void addTreeWindow(File f, boolean hasRoot){
+		TreeWindow tmpTW = new TreeWindow(f, hasRoot, mNodeTableModel);
+		mTreeWindows.add(tmpTW);
+		tmpTW.addTreeSelectionListener(this);
+		JScrollPane treeJSP = new JScrollPane(tmpTW);
+		String tabName = f.getParentFile().getName()+"/"+f.getName();
+		mTabPane.addTab(tabName, Tools.readImage("rocket.png"), treeJSP);
+		mTabPane.setSelectedComponent(treeJSP);
+		
+		int index = mTabPane.getSelectedIndex();
+		mTabPane.setTabComponentAt(index, new CloseableTab(mTabPane));
+		tmpTW.setTabIndex(index);
+	}
 	
 	
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
 		if (e.getSource() instanceof JMenuItem) {
 			menuClick(e);
 		}
@@ -205,46 +211,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		
 		if(source == mAboutInfoItem){
 			new AboutWindow();
-		}
-		else if (source == mFileOpenSFSItem) {
-			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
-			
-			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			int returnVal = mFileChooser.showOpenDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				Logger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
-				if(curWindow == mPrimaryTreeWindow){
-					mPrimaryTreeWindow.load(mFileChooser.getSelectedFile(), true);
-				}
-				else if(curWindow == mSecondaryTreeWindow){
-					mSecondaryTreeWindow.load(mFileChooser.getSelectedFile(), true);
-				}
-				else{
-					JOptionPane.showMessageDialog(this, "Please select a tree window to load the file!", "Error", JOptionPane.WARNING_MESSAGE);
-				}
-			}
-		}
-		else if (source == mFileOpenOtherItem) {
-			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
-			
-			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			int returnVal = mFileChooser.showOpenDialog(this);
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				Logger.log("You chose to open this file: " + mFileChooser.getSelectedFile().getName());
-				if(curWindow == mPrimaryTreeWindow){
-					mPrimaryTreeWindow.load(mFileChooser.getSelectedFile(), false);
-				}
-				else if(curWindow == mSecondaryTreeWindow){
-					mSecondaryTreeWindow.load(mFileChooser.getSelectedFile(), false);
-				}
-				else{
-					JOptionPane.showMessageDialog(this, "Please select a tree window to load the file!", "Error", JOptionPane.WARNING_MESSAGE);
-				}
-			}
-		}
-		else if (source == mFileSaveItem) {
-			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
-			showSaveDialog(curWindow);
+			return;
 		}
 		else if (source == mFileSettingsItem) {
 			mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -252,52 +219,96 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				Settings.setString(Settings.PREF_KSP_DIR, mFileChooser.getSelectedFile().getAbsolutePath());
 			}
+			return;
 		}
-		else if (source == mEditSearchItem) {
-			Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
-			
-			String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
-			if(curWindow == mPrimaryTreeWindow){
-				mPrimaryTreeWindow.search(search);
+		else if (source == mFileOpenSFSItem) {
+			loadFile(true);
+			return;
+		}
+		else if (source == mFileOpenOtherItem) {
+			loadFile(false);
+			return;
+		}
+		
+		TreeWindow tw = getCurrentTreeWindow();
+		if(tw!=null){
+			if (source == mFileSaveItem) {
+				showSaveDialog(tw);
 			}
-			else if(curWindow == mSecondaryTreeWindow){
-				mSecondaryTreeWindow.search(search);
+			else if (source == mEditSearchItem) {
+				String search = JOptionPane.showInputDialog(this, "Please enter search term:", "Search", JOptionPane.QUESTION_MESSAGE);
+				tw.search(search);
 			}
-			else{
-				JOptionPane.showMessageDialog(this, "Please select a tree window to search!", "Error", JOptionPane.WARNING_MESSAGE);
-			}
+		}
+		else{
+			JOptionPane.showMessageDialog(this, "Please select a tree window first!", "Error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
-
-	protected void showSaveDialog(Component curWindow){
+	
+	protected TreeWindow getCurrentTreeWindow(){
+		Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
+		for (TreeWindow tw : mTreeWindows) {
+			if(curWindow == tw){
+				return tw;
+			}
+		}
+		return null;
+	}
+	
+	protected void loadFile(boolean hasRoot){
+		
 		mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		int returnVal = mFileChooser.showSaveDialog(this);
+		int returnVal = mFileChooser.showOpenDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File f = mFileChooser.getSelectedFile();
-			Logger.log("You chose to save this file: " + f.getName());
-			if(f.exists()){
-				int res = JOptionPane.showConfirmDialog(this, "File exists! Do you want to overwrite the file?", "File exists!", JOptionPane.YES_NO_CANCEL_OPTION);
-				if(res == JOptionPane.YES_OPTION){
-					doSave(f, curWindow);
+			Logger.log("You chose to open this file: " + f.getName());
+			for (TreeWindow tw : mTreeWindows){
+				try {
+					if(tw.getFile() != null && f.getCanonicalPath().equals(tw.getFile().getCanonicalPath())){
+						int res = JOptionPane.showConfirmDialog(this, "File already opened! Do you want to open the file again?", "File already opened!", JOptionPane.YES_NO_CANCEL_OPTION);
+						if(res == JOptionPane.YES_OPTION){
+							break;
+						}
+						else if(res == JOptionPane.NO_OPTION){
+							mTabPane.setSelectedIndex(tw.getTabIndex());
+							return;
+						}
+						else{
+							return;
+						}
+					}
+				} catch (IOException e) {
+					//e.printStackTrace();
 				}
-				else if(res == JOptionPane.NO_OPTION){
-					// user choose no --> show save dialog again
-					showSaveDialog(curWindow);
-				}
-				// cancel --> do nothing
 			}
-			else{
-				doSave(f, curWindow);
-			}
+			// we came here, file isn't opened
+			addTreeWindow(f, hasRoot);
+			
 		}
 	}
 
-	protected void doSave(File f, Component curWindow){
-		if(curWindow == mPrimaryTreeWindow){
-			mPrimaryTreeWindow.save(mFileChooser.getSelectedFile());
-		}
-		else if(curWindow == mSecondaryTreeWindow){
-			mSecondaryTreeWindow.save(mFileChooser.getSelectedFile());
+	protected void showSaveDialog(TreeWindow tw){
+		if(tw!=null){
+			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int returnVal = mFileChooser.showSaveDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File f = mFileChooser.getSelectedFile();
+				Logger.log("You chose to save this file: " + f.getName());
+				if(f.exists()){
+					int res = JOptionPane.showConfirmDialog(this, "File exists! Do you want to overwrite the file?", "File exists!", JOptionPane.YES_NO_CANCEL_OPTION);
+					if(res == JOptionPane.YES_OPTION){
+						tw.saveAs(f);
+					}
+					else if(res == JOptionPane.NO_OPTION){
+						// user choose no --> show save dialog again
+						showSaveDialog(tw);
+					}
+					// cancel --> do nothing
+				}
+				else{
+					tw.saveAs(f);
+				}
+			}
 		}
 		else{
 			JOptionPane.showMessageDialog(this, "Please select a tree window to save the file!", "Error", JOptionPane.WARNING_MESSAGE);
