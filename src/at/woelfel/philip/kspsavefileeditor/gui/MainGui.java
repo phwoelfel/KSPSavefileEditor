@@ -1,9 +1,9 @@
 package at.woelfel.philip.kspsavefileeditor.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.FlowLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -16,14 +16,19 @@ import java.io.FileNotFoundException;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.tree.TreePath;
 
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
 import at.woelfel.philip.kspsavefileeditor.backend.NodeTableModel;
@@ -32,7 +37,7 @@ import at.woelfel.philip.tools.Logger;
 import at.woelfel.philip.tools.Tools;
 
 @SuppressWarnings("serial")
-public class MainGui extends JFrame implements ActionListener, ItemListener{
+public class MainGui extends JFrame implements ActionListener, ItemListener, TreeSelectionListener{
 	/*
 	 * TODO: search & replace:
 	 * 			gefundenen elemente anzeigen und dann mit checkboxen auswaehlen welche ersetzt werden sollen
@@ -42,6 +47,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 	private JTable mEntryTable;
 	private TreeWindow mPrimaryTreeWindow;
 	private TreeWindow mSecondaryTreeWindow;
+	private JLabel mPathLabel;
 	
 	
 	private JMenuItem mFileOpenSFSItem;
@@ -119,7 +125,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		//setSize((int)(screen.getWidth()-(screen.getWidth()/10)), (int)(screen.getHeight()-(screen.getHeight()/10)));
 		setSize(screen);
-		setLayout(new GridBagLayout());
+		setLayout(new BorderLayout());
 		
 		
 		// ################################## Menu ##################################
@@ -150,8 +156,10 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 		JScrollPane entryTableJSP = new JScrollPane(mEntryTable);
 		
 		mPrimaryTreeWindow = new TreeWindow(mPrimaryRootNode, mNodeTableModel);
+		mPrimaryTreeWindow.addTreeSelectionListener(this);
 		JScrollPane primaryTreeJSP = new JScrollPane(mPrimaryTreeWindow);
 		mSecondaryTreeWindow = new TreeWindow(mSecondaryRootNode, mNodeTableModel);
+		mSecondaryTreeWindow.addTreeSelectionListener(this);
 		JScrollPane secondaryTreeJSP = new JScrollPane(mSecondaryTreeWindow);
 		
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, primaryTreeJSP, secondaryTreeJSP);
@@ -162,14 +170,13 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 				
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainSplitPane, entryTableJSP);
 		splitPane.setDividerLocation((screen.height/3)*2); // set to 2/3 of screen height
-		GridBagConstraints splitC = new GridBagConstraints();
-		splitC.fill = GridBagConstraints.BOTH;
-		splitC.gridx = 0;
-		splitC.gridy = 0;
-		splitC.weightx = 1;
-		splitC.weighty = 1;
-		add(splitPane, splitC);
+		add(splitPane, BorderLayout.CENTER);
 		
+		
+		mPathLabel = new JLabel("Path: ");
+		JPanel pathPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		pathPanel.add(mPathLabel);
+		add(pathPanel, BorderLayout.NORTH);
 		
 		
 		//add(nodeTreeJSP,c);
@@ -327,8 +334,34 @@ public class MainGui extends JFrame implements ActionListener, ItemListener{
 		}
 		
 	}
+
+
+
+
+	@Override
+	public void valueChanged(TreeSelectionEvent e) {
+		TreePath tp = e.getPath();
+		if(tp!=null){
+			mPathLabel.setText(pathToString(tp));
+		}
+	}
 	
-	
+	public String pathToString(TreePath treePath){
+		StringBuilder sb = new StringBuilder();
+		sb.append("Path: ");
+		
+		Object[] path = treePath.getPath();
+		for (int i = 0; i < path.length; i++) {
+			if(i==path.length-1){
+				sb.append(path[i]);
+			}
+			else{
+				sb.append(path[i]+" > ");
+			}
+		}
+		
+		return sb.toString();
+	}
 
 	
 	

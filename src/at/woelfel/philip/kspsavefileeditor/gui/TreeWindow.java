@@ -210,11 +210,17 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		Object lPC = e.getPath().getLastPathComponent();
-		if (lPC != null && lPC instanceof Node) {
-			mNodeTableModel.setNode((Node) lPC);
+		TreePath tp = e.getPath();
+		if(tp!=null){
+			Object lPC = tp.getLastPathComponent();
+			if (lPC != null){
+				if(lPC instanceof Node) {
+					mNodeTableModel.setNode((Node) lPC);
+				}
+			}
 		}
 	}
+	
 
 	@Override
 	public void onEntryChanged(Entry e) {
