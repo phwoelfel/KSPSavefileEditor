@@ -40,7 +40,7 @@ import at.woelfel.philip.tools.Logger;
 import at.woelfel.philip.tools.Tools;
 
 @SuppressWarnings("serial")
-public class TreeWindow extends JTree implements TreeSelectionListener, ChangeListener, ActionListener {
+public class NodeTree extends JTree implements TreeSelectionListener, ChangeListener, ActionListener {
 
 	// private JTree mNodeTree;
 	private NodeTreeModel mNodeTreeModel;
@@ -62,14 +62,12 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	private JMenuItem mRCPasteMenu;
 	
 	
-	protected int mTabIndex;
-	
 	/**
 	 * @param f The File which should be loaded.
 	 * @param hasRoot If the file that should be loaded has a root node or not (generally save files have one, crafts don't have a root node).
 	 * @param nodeTableModel The table model of the table in which the entries should be displayed.
 	 */
-	public TreeWindow(File f, boolean hasRoot, NodeTableModel nodeTableModel){
+	public NodeTree(File f, boolean hasRoot, NodeTableModel nodeTableModel){
 		this(null, nodeTableModel);
 		load(f, hasRoot);
 	}
@@ -78,7 +76,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	 * @param rootNode The root node of the tree.
 	 * @param nodeTableModel The table model of the table in which the entries should be displayed.
 	 */
-	public TreeWindow(Node rootNode, NodeTableModel nodeTableModel) {
+	public NodeTree(Node rootNode, NodeTableModel nodeTableModel) {
 		super();
 
 		mRootNode = rootNode;
@@ -94,6 +92,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 		addTreeSelectionListener(this);
 		setEditable(true);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+		setScrollsOnExpand(true);
 
 		ImageIcon rocket = Tools.readImage("rocket.png");
 		ImageIcon rocketFly = Tools.readImage("rocket-fly.png");
@@ -130,7 +129,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 					setRootNode(p.parse(hasRoot));
 				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(TreeWindow.this, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(NodeTree.this, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				ProgressScreen.hideProgress();
 			}
@@ -535,7 +534,7 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 						} catch (Exception e) {
 							ProgressScreen.hideProgress();
 							e.printStackTrace();
-							JOptionPane.showMessageDialog(TreeWindow.this, "Error parsing clipboard!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(NodeTree.this, "Error parsing clipboard!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						ProgressScreen.hideProgress();
 					}
@@ -543,9 +542,9 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 				th.start();
 			}
 		} catch (UnsupportedFlavorException e1) {
-			JOptionPane.showMessageDialog(TreeWindow.this, "Unsupported clipboard data!\n", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(NodeTree.this, "Unsupported clipboard data!\n", "Error", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e1) {
-			JOptionPane.showMessageDialog(TreeWindow.this, "Error:" +e1.getLocalizedMessage() +"!\n", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(NodeTree.this, "Error:" +e1.getLocalizedMessage() +"!\n", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -570,13 +569,5 @@ public class TreeWindow extends JTree implements TreeSelectionListener, ChangeLi
 	
 	public File getFile(){
 		return mFile;
-	}
-
-	public int getTabIndex() {
-		return mTabIndex;
-	}
-
-	public void setTabIndex(int tabIndex) {
-		this.mTabIndex = tabIndex;
 	}
 }

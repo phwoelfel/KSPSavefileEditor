@@ -20,9 +20,11 @@ import javax.swing.JTabbedPane;
 public class CloseableTab extends JPanel {
 
 	protected JTabbedPane mTabPane;
+	protected MainGui mMainGui;
 
-	public CloseableTab(JTabbedPane tabPane) {
+	public CloseableTab(JTabbedPane tabPane, MainGui mg) {
 		mTabPane = tabPane;
+		mMainGui = mg;
 		setLayout(new FlowLayout(FlowLayout.CENTER, 2, 2));
 		setOpaque(false);
 		
@@ -64,7 +66,7 @@ public class CloseableTab extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				int i = mTabPane.indexOfTabComponent(CloseableTab.this);
 				if (i != -1) {
-					mTabPane.remove(i);
+					mMainGui.removeTab(i);
 				}
 			}
 		});

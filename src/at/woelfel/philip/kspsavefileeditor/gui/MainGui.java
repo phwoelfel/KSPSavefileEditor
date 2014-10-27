@@ -49,7 +49,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 	
 	private JTabbedPane mTabPane;
 	private JTable mEntryTable;
-	private ArrayList<TreeWindow> mTreeWindows;
+	private ArrayList<NodeTreeWindow> mTreeWindows;
 	private JLabel mPathLabel;
 	
 	
@@ -146,7 +146,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		JScrollPane entryTableJSP = new JScrollPane(mEntryTable);
 		
 		mTabPane = new JTabbedPane();
-		mTreeWindows = new ArrayList<TreeWindow>();
+		mTreeWindows = new ArrayList<NodeTreeWindow>();
 		addTreeWindow(mTempNode);
 		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mTabPane, entryTableJSP);
@@ -154,7 +154,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		add(splitPane, BorderLayout.CENTER);
 		
 		
-		mPathLabel = new JLabel("Path: ");
+		mPathLabel = new JLabel("Path");
 		JPanel pathPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pathPanel.add(mPathLabel);
 		add(new JScrollPane(pathPanel), BorderLayout.NORTH);
@@ -168,30 +168,30 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 	}
 
 	public void addTreeWindow(Node n){
-		TreeWindow tmpTW = new TreeWindow(n, mNodeTableModel);
-		mTreeWindows.add(tmpTW);
-		tmpTW.addTreeSelectionListener(this);
-		JScrollPane treeJSP = new JScrollPane(tmpTW);
-		mTabPane.addTab(n.getNodeName(), Tools.readImage("rocket.png"), treeJSP);
-		mTabPane.setSelectedComponent(treeJSP);
+		NodeTree tmpNT = new NodeTree(n, mNodeTableModel);
+		String tabName = n.getNodeName();
 		
-		int index = mTabPane.getSelectedIndex();
-		mTabPane.setTabComponentAt(index, new CloseableTab(mTabPane));
-		tmpTW.setTabIndex(index);
+		addTreeWindow(tmpNT, tabName);
 	}
 	
 	public void addTreeWindow(File f, boolean hasRoot){
-		TreeWindow tmpTW = new TreeWindow(f, hasRoot, mNodeTableModel);
-		mTreeWindows.add(tmpTW);
-		tmpTW.addTreeSelectionListener(this);
-		JScrollPane treeJSP = new JScrollPane(tmpTW);
+		NodeTree tmpNT = new NodeTree(f, hasRoot, mNodeTableModel);
 		String tabName = f.getParentFile().getName()+"/"+f.getName();
-		mTabPane.addTab(tabName, Tools.readImage("rocket.png"), treeJSP);
-		mTabPane.setSelectedComponent(treeJSP);
+		
+		addTreeWindow(tmpNT, tabName);
+	}
+	
+	public void addTreeWindow(NodeTree nt, String tabName){
+		nt.addTreeSelectionListener(this);
+		
+		NodeTreeWindow tmpNTW = new NodeTreeWindow(nt);
+		mTreeWindows.add(tmpNTW);
+		
+		mTabPane.addTab(tabName, Tools.readImage("rocket.png"), tmpNTW);
+		mTabPane.setSelectedComponent(tmpNTW);
 		
 		int index = mTabPane.getSelectedIndex();
-		mTabPane.setTabComponentAt(index, new CloseableTab(mTabPane));
-		tmpTW.setTabIndex(index);
+		mTabPane.setTabComponentAt(index, new CloseableTab(mTabPane, this));
 	}
 	
 	
@@ -230,14 +230,14 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 			return;
 		}
 		
-		TreeWindow tw = getCurrentTreeWindow();
+		NodeTreeWindow tw = getCurrentTreeWindow();
 		if(tw!=null){
 			if (source == mFileSaveItem) {
-				showSaveDialog(tw);
+				showSaveDialog(tw.getNodeTree());
 			}
 			else if (source == mEditSearchItem) {
 				String search = JOptionPane.showInputDialog(this, "Please enter search term:", "Search", JOptionPane.QUESTION_MESSAGE);
-				tw.search(search);
+				tw.getNodeTree().search(search);
 			}
 		}
 		else{
@@ -245,9 +245,9 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		}
 	}
 	
-	protected TreeWindow getCurrentTreeWindow(){
+	protected NodeTreeWindow getCurrentTreeWindow(){
 		Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
-		for (TreeWindow tw : mTreeWindows) {
+		for (NodeTreeWindow tw : mTreeWindows) {
 			if(curWindow == tw){
 				return tw;
 			}
@@ -262,15 +262,15 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File f = mFileChooser.getSelectedFile();
 			Logger.log("You chose to open this file: " + f.getName());
-			for (TreeWindow tw : mTreeWindows){
+			for (NodeTreeWindow tw : mTreeWindows){
 				try {
-					if(tw.getFile() != null && f.getCanonicalPath().equals(tw.getFile().getCanonicalPath())){
+					if(tw.getNodeTree().getFile() != null && f.getCanonicalPath().equals(tw.getNodeTree().getFile().getCanonicalPath())){
 						int res = JOptionPane.showConfirmDialog(this, "File already opened! Do you want to open the file again?", "File already opened!", JOptionPane.YES_NO_CANCEL_OPTION);
 						if(res == JOptionPane.YES_OPTION){
 							break;
 						}
 						else if(res == JOptionPane.NO_OPTION){
-							mTabPane.setSelectedIndex(tw.getTabIndex());
+							mTabPane.setSelectedComponent(tw);
 							return;
 						}
 						else{
@@ -287,7 +287,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		}
 	}
 
-	protected void showSaveDialog(TreeWindow tw){
+	protected void showSaveDialog(NodeTree tw){
 		if(tw!=null){
 			mFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = mFileChooser.showSaveDialog(this);
@@ -359,7 +359,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 	
 	public String pathToString(TreePath treePath){
 		StringBuilder sb = new StringBuilder();
-		sb.append("Path: ");
+		// sb.append("Path: ");
 		
 		Object[] path = treePath.getPath();
 		for (int i = 0; i < path.length; i++) {
@@ -372,6 +372,12 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 		}
 		
 		return sb.toString();
+	}
+
+	public void removeTab(int i) {
+		NodeTreeWindow ntw = (NodeTreeWindow)mTabPane.getComponentAt(i);
+		mTabPane.remove(ntw);
+		mTreeWindows.remove(ntw);
 	}
 
 	
