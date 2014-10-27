@@ -246,13 +246,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 	}
 	
 	protected NodeTreeWindow getCurrentTreeWindow(){
-		Component curWindow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getPermanentFocusOwner();
-		for (NodeTreeWindow tw : mTreeWindows) {
-			if(curWindow == tw){
-				return tw;
-			}
-		}
-		return null;
+		return (NodeTreeWindow) mTabPane.getSelectedComponent();
 	}
 	
 	protected void loadFile(boolean hasRoot){
