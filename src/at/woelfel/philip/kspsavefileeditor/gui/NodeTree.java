@@ -129,7 +129,7 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 					setRootNode(p.parse(hasRoot));
 				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(NodeTree.this, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Error parsing file!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				ProgressScreen.hideProgress();
 			}
@@ -179,45 +179,75 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		
 	}
 
-	/**
-	 * Searches the tree for the string and shows it if it's found.
-	 * If nothing is found false is returned.
-	 * @param search the search term
-	 * @return true if something is found, false if nothing can be found.
-	 */
-	public boolean search(String search) {
-		return search(getRootNode(), search);
+	
+	
+	public ArrayList<TreePath> search(TreePath[] paths, String search){
+		ArrayList<Node> nodesToSearch = new ArrayList<Node>();
+		
+		// get the nodes we want to search through
+		// TODO: don't search subnodes of already selected nodes --> duplicate results!
+		for (int i = 0; i < paths.length; i++) {
+			Object lpc = paths[i].getLastPathComponent();
+			if(lpc instanceof Node){
+				nodesToSearch.add((Node)lpc);
+			}
+			else if(lpc instanceof Entry){
+				nodesToSearch.add(((Entry)lpc).getParentNode());
+			}
+		}
+		
+		return search(nodesToSearch, search);
 	}
 	
-	/**
-	 * Searches the tree for the string and shows it if it's found.
-	 * If nothing is found false is returned.
-	 * @param n the Node from which searching should start
-	 * @param search the search term
-	 * @return true if something is found, false if nothing can be found.
-	 */
-	public boolean search(Node n, String search) {
-		if (search != null && search.length() != 0 && n != null) {
-			TreePath[] tp = n.multiSearch(search);
-			if (tp != null && tp.length > 0) {
-				Logger.log("found something: " + tp);
-				if (tp.length > 1) {
-					TreePath sel = (TreePath) JOptionPane.showInputDialog(this, "Found multiple results!\nChoose one:", "Multiple Results", JOptionPane.PLAIN_MESSAGE, null, tp, null);
+	public ArrayList<TreePath> search(ArrayList<Node> nodes, String search){
+		
+		if(search != null && search.length() != 0 && nodes != null && nodes.size() > 0){
+			TreePath[] tp = null;
+			ArrayList<TreePath> results = new ArrayList<TreePath>();
+			for (Node node : nodes) {
+				tp = node.multiSearch(search);
+				if(tp!=null && tp.length>0){
+					results.addAll(Arrays.asList(tp)); // add found paths to result list
+				}
+			}
+			return results;
+		}
+		
+		return null;
+	}
+	
+	public void doSearch(){
+		String search = JOptionPane.showInputDialog(null, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
+		if(search != null && search.length() != 0){
+			TreePath[] paths = getSelectionPaths(); // get all selected paths
+			ArrayList<TreePath> results = new ArrayList<TreePath>();
+			if(paths != null && paths.length>0){
+				// search from selection
+				results = search(paths, search);
+			}
+			else{
+				// global search
+				ArrayList<Node> tmp = new ArrayList<Node>(1);
+				tmp.add(mRootNode);
+				results = search(tmp, search);
+			}
+			
+			if (results != null && results.size() > 0) {
+				Logger.log("found something: " + results);
+				if (results.size() > 1) {
+					TreePath sel = (TreePath) JOptionPane.showInputDialog(null, "Found multiple results!\nChoose one:", "Multiple Results", JOptionPane.PLAIN_MESSAGE, null, results.toArray(), null);
 					setSelectionPath(sel);
 					scrollPathToVisible(sel);
 				}
 				else {
-					setSelectionPath(tp[0]);
-					scrollPathToVisible(tp[0]);
+					setSelectionPath(results.get(0));
+					scrollPathToVisible(results.get(0));
 				}
-				return true;
 			}
 			else {
-				JOptionPane.showMessageDialog(this, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
-				return false;
+				JOptionPane.showMessageDialog(null, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
 			}
 		}
-		return false;
 	}
 
 	public void setSelection(TreePath sel) {
@@ -421,7 +451,7 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		else if (source == mRCDeleteMenu) {
 			// get selected element
 			// TreePath path = getSelectionPath();
-			int yesno = JOptionPane.showConfirmDialog(this, "Do you really want to delete this Node/Entry?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+			int yesno = JOptionPane.showConfirmDialog(null, "Do you really want to delete this Node/Entry?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (yesno == JOptionPane.YES_OPTION) {
 				TreePath[] paths = getSelectionPaths();
 				for (int i = 0; i < paths.length; i++) {
@@ -458,53 +488,7 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		}
 	}
 	
-	private void doSearch(){
-		// get selected element
-		// TreePath path = getSelectionPath();
-		String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
-		if(search != null && search.length() != 0){
-			TreePath[] paths = getSelectionPaths(); // get all selected paths
-			if(paths != null && paths.length>0){
-				// search from selection
-				ArrayList<TreePath> results = new ArrayList<TreePath>();
-				TreePath[] tp = null;
-				for (int i = 0; i < paths.length; i++) { // search through all selected paths
-					Object lpc = paths[i].getLastPathComponent();
-					
-					if(lpc instanceof Node){
-						tp = ((Node)lpc).multiSearch(search);
-					}
-					else if(lpc instanceof Entry){
-						tp = ((Entry)lpc).getParentNode().multiSearch(search);
-					}
-					if(tp!=null && tp.length>0){
-						results.addAll(Arrays.asList(tp)); // add found paths to result list
-					}
-				}
-				if (results != null && results.size() > 0) {
-					Logger.log("found something: " + results);
-					if (results.size() > 1) {
-						TreePath sel = (TreePath) JOptionPane.showInputDialog(this, "Found multiple results!\nChoose one:", "Multiple Results", JOptionPane.PLAIN_MESSAGE, null, results.toArray(), null);
-						setSelectionPath(sel);
-						scrollPathToVisible(sel);
-					}
-					else {
-						setSelectionPath(results.get(0));
-						scrollPathToVisible(results.get(0));
-					}
-				}
-				else {
-					JOptionPane.showMessageDialog(this, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
-				}	
-				
-				
-			}
-			else{
-				// global search
-				search(search);
-			}
-		}
-	}
+	
 	
 	private void doPaste(){
 		Logger.log("doPaste()");
@@ -545,7 +529,7 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 						} catch (Exception e) {
 							ProgressScreen.hideProgress();
 							e.printStackTrace();
-							JOptionPane.showMessageDialog(NodeTree.this, "Error parsing clipboard!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Error parsing clipboard!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						ProgressScreen.hideProgress();
 					}
@@ -553,9 +537,9 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 				th.start();
 			}
 		} catch (UnsupportedFlavorException e1) {
-			JOptionPane.showMessageDialog(NodeTree.this, "Unsupported clipboard data!\n", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Unsupported clipboard data!\n", "Error", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException e1) {
-			JOptionPane.showMessageDialog(NodeTree.this, "Error:" +e1.getLocalizedMessage() +"!\n", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Error:" +e1.getLocalizedMessage() +"!\n", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	

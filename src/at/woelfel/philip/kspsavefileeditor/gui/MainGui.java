@@ -239,8 +239,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 				showSaveDialog(tw.getNodeTree());
 			}
 			else if (source == mEditSearchItem) {
-				String search = JOptionPane.showInputDialog(this, "Please enter search term:", "Search", JOptionPane.QUESTION_MESSAGE);
-				tw.getNodeTree().search(search);
+				tw.getNodeTree().doSearch();
 			}
 		}
 		else{
