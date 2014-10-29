@@ -299,6 +299,7 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"copy");
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"paste");
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"search");
 		getActionMap().put("copy", new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -309,6 +310,12 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				doPaste();
+			}
+		});
+		getActionMap().put("search", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doSearch();
 			}
 		});
 	}
@@ -441,57 +448,61 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 			}
 		}
 		else if (source == mRCSearchMenu) {
-			// get selected element
-			// TreePath path = getSelectionPath();
-			String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
-			if(search != null && search.length() != 0){
-				TreePath[] paths = getSelectionPaths(); // get all selected paths
-				if(paths != null && paths.length>0){
-					// search from selection
-					ArrayList<TreePath> results = new ArrayList<TreePath>();
-					TreePath[] tp = null;
-					for (int i = 0; i < paths.length; i++) { // search through all selected paths
-						Object lpc = paths[i].getLastPathComponent();
-						
-						if(lpc instanceof Node){
-							tp = ((Node)lpc).multiSearch(search);
-						}
-						else if(lpc instanceof Entry){
-							tp = ((Entry)lpc).getParentNode().multiSearch(search);
-						}
-						if(tp!=null && tp.length>0){
-							results.addAll(Arrays.asList(tp)); // add found paths to result list
-						}
-					}
-					if (results != null && results.size() > 0) {
-						Logger.log("found something: " + results);
-						if (results.size() > 1) {
-							TreePath sel = (TreePath) JOptionPane.showInputDialog(this, "Found multiple results!\nChoose one:", "Multiple Results", JOptionPane.PLAIN_MESSAGE, null, results.toArray(), null);
-							setSelectionPath(sel);
-							scrollPathToVisible(sel);
-						}
-						else {
-							setSelectionPath(results.get(0));
-							scrollPathToVisible(results.get(0));
-						}
-					}
-					else {
-						JOptionPane.showMessageDialog(this, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
-					}	
-					
-					
-				}
-				else{
-					// global search
-					search(search);
-				}
-			}
+			doSearch();
 		}
 		else if (source == mRCCopyMenu) {
 			doCopy();
 		}
 		else if (source == mRCPasteMenu){
 			doPaste();
+		}
+	}
+	
+	private void doSearch(){
+		// get selected element
+		// TreePath path = getSelectionPath();
+		String search = JOptionPane.showInputDialog(this, "Please enter search term", "Search", JOptionPane.QUESTION_MESSAGE);
+		if(search != null && search.length() != 0){
+			TreePath[] paths = getSelectionPaths(); // get all selected paths
+			if(paths != null && paths.length>0){
+				// search from selection
+				ArrayList<TreePath> results = new ArrayList<TreePath>();
+				TreePath[] tp = null;
+				for (int i = 0; i < paths.length; i++) { // search through all selected paths
+					Object lpc = paths[i].getLastPathComponent();
+					
+					if(lpc instanceof Node){
+						tp = ((Node)lpc).multiSearch(search);
+					}
+					else if(lpc instanceof Entry){
+						tp = ((Entry)lpc).getParentNode().multiSearch(search);
+					}
+					if(tp!=null && tp.length>0){
+						results.addAll(Arrays.asList(tp)); // add found paths to result list
+					}
+				}
+				if (results != null && results.size() > 0) {
+					Logger.log("found something: " + results);
+					if (results.size() > 1) {
+						TreePath sel = (TreePath) JOptionPane.showInputDialog(this, "Found multiple results!\nChoose one:", "Multiple Results", JOptionPane.PLAIN_MESSAGE, null, results.toArray(), null);
+						setSelectionPath(sel);
+						scrollPathToVisible(sel);
+					}
+					else {
+						setSelectionPath(results.get(0));
+						scrollPathToVisible(results.get(0));
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "Didn't find anything!", "No Search Result", JOptionPane.ERROR_MESSAGE);
+				}	
+				
+				
+			}
+			else{
+				// global search
+				search(search);
+			}
 		}
 	}
 	
