@@ -106,8 +106,10 @@ public class NodeTreeModel implements TreeModel, TreeWillExpandListener {
 	
 	public void fireTreeStructureChanged(Node n){
 		TreeModelEvent event = getEvent(n);
-		for(TreeModelListener l:mTreeListener){
-			l.treeStructureChanged(event);
+		if(event!=null){
+			for(TreeModelListener l:mTreeListener){
+				l.treeStructureChanged(event);
+			}
 		}
 	}
 	
@@ -120,15 +122,17 @@ public class NodeTreeModel implements TreeModel, TreeWillExpandListener {
 	
 	private TreeModelEvent getEvent(Node n){
 		ArrayList<Object> path = null;
-		if(n.hasParent()){
-			path = n.getParentNode().getPathToRoot();
+		if(n != null){
+			if(n.hasParent()){
+				path = n.getParentNode().getPathToRoot();
+			}
+			else{
+				path = n.getPathToRoot();
+			}
+			Logger.log("path: " +path);
+			return new TreeModelEvent(n, path.toArray());
 		}
-		else{
-			path = n.getPathToRoot();
-		}
-		Logger.log("path: " +path);
-		
-		return new TreeModelEvent(n, path.toArray());
+		return null;
 	}
 	
 	private TreeModelEvent getEvent(Entry e){
@@ -174,6 +178,11 @@ public class NodeTreeModel implements TreeModel, TreeWillExpandListener {
 				lpc.isExpanded(true);
 			}
 		}
+	}
+	
+	public void cleanup(){
+		mRootNode = null;
+		mTreeListener.clear();
 	}
 
 }

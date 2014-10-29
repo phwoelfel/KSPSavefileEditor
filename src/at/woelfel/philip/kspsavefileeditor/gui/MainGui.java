@@ -1,10 +1,8 @@
 package at.woelfel.philip.kspsavefileeditor.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,6 +67,7 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 	
 	public MainGui() {
 		Logger.setEnabled(false);
+		
 		
 		mFileChooser = new JFileChooser(Settings.getString(Settings.PREF_KSP_DIR, System.getProperty("user.home")));
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("KSP Save or Craft files (sfs, txt, craft, cfg)", "sfs", "txt", "craft", "cfg");
@@ -370,8 +369,13 @@ public class MainGui extends JFrame implements ActionListener, ItemListener, Tre
 
 	public void removeTab(int i) {
 		NodeTreeWindow ntw = (NodeTreeWindow)mTabPane.getComponentAt(i);
+		ntw.getNodeTree().removeTreeSelectionListener(this);
+		ntw.cleanup();
+		ntw.setNodeTree(new NodeTree(null, mNodeTableModel));
+		
 		mTabPane.remove(ntw);
 		mTreeWindows.remove(ntw);
+		ntw = null;
 	}
 
 	

@@ -581,4 +581,15 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 	public File getFile(){
 		return mFile;
 	}
+	
+	public void cleanup(){
+		removeTreeSelectionListener(this);
+		removeTreeWillExpandListener(mNodeTreeModel);
+		mNodeEditor.removeChangeListener(this);
+		mEntryEditor.removeChangeListener(this);
+		mNodeTableModel.removeChangeListener(this);
+		mNodeTreeModel.cleanup();
+		mNodeTreeModel = null;
+		mRootNode = null;
+	}
 }
