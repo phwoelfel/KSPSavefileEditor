@@ -330,6 +330,8 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"copy");
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"paste");
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),"search");
+		getInputMap().put(KeyStroke.getKeyStroke((char)KeyEvent.VK_DELETE), "delete");
+		
 		getActionMap().put("copy", new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -346,6 +348,12 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				doSearch();
+			}
+		});
+		getActionMap().put("delete", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doDelete();
 			}
 		});
 	}
@@ -449,33 +457,7 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 			}
 		}
 		else if (source == mRCDeleteMenu) {
-			// get selected element
-			// TreePath path = getSelectionPath();
-			int yesno = JOptionPane.showConfirmDialog(null, "Do you really want to delete this Node/Entry?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-			if (yesno == JOptionPane.YES_OPTION) {
-				TreePath[] paths = getSelectionPaths();
-				for (int i = 0; i < paths.length; i++) {
-					TreePath path = paths[i];
-					Object selection = path.getLastPathComponent();
-					int pc = path.getPathCount();
-					if (pc >= 2) { // we got at least two nodes --> remove from parent
-						Node parent = (Node) path.getPathComponent(pc - 2);
-						if (selection instanceof Entry) {
-							parent.removeEntry((Entry) selection);
-							onEntryRemoved((Entry) selection);
-							selection = null;
-						}
-						else if (selection instanceof Node) {
-							parent.removeSubNode((Node) selection);
-							onNodeRemoved((Node) selection);
-							selection = null;
-						}
-					}
-					else { // we are deleting the root node!
-							// TODO: delete the root node?
-					}
-				}
-			}
+			doDelete();
 		}
 		else if (source == mRCSearchMenu) {
 			doSearch();
@@ -490,6 +472,34 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 	
 	
 	
+	private void doDelete() {
+		int yesno = JOptionPane.showConfirmDialog(null, "Do you really want to delete this Node/Entry?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		if (yesno == JOptionPane.YES_OPTION) {
+			TreePath[] paths = getSelectionPaths();
+			for (int i = 0; i < paths.length; i++) {
+				TreePath path = paths[i];
+				Object selection = path.getLastPathComponent();
+				int pc = path.getPathCount();
+				if (pc >= 2) { // we got at least two nodes --> remove from parent
+					Node parent = (Node) path.getPathComponent(pc - 2);
+					if (selection instanceof Entry) {
+						parent.removeEntry((Entry) selection);
+						onEntryRemoved((Entry) selection);
+						selection = null;
+					}
+					else if (selection instanceof Node) {
+						parent.removeSubNode((Node) selection);
+						onNodeRemoved((Node) selection);
+						selection = null;
+					}
+				}
+				else { // we are deleting the root node!
+						// TODO: delete the root node?
+				}
+			}
+		}
+	}
+
 	private void doPaste(){
 		Logger.log("doPaste()");
 		try {
