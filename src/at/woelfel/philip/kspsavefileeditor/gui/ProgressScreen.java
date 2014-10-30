@@ -20,6 +20,7 @@ public class ProgressScreen extends JFrame {
 		setUndecorated(true);
 		//setSize(200,40);
 		setLayout(new BorderLayout());
+		setTitle(label);
 		
 		mProgressBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
 		mProgressBar.setStringPainted(true);
@@ -39,6 +40,7 @@ public class ProgressScreen extends JFrame {
 		}
 		else{
 			mInstance.setLabel(label);
+			mInstance.setTitle(label);
 			mInstance.pack();
 			mInstance.setLocationRelativeTo(parent);
 		}
