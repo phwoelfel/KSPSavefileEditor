@@ -24,13 +24,13 @@ public class Parser {
 	 */
 	public Parser(String content, boolean isContent) {
 		if(content != null && content.length()>0){
-			mLines = new ArrayList<String>(Arrays.asList(content.split(System.getProperty("line.separator"))));
+			mLines = new ArrayList<String>(Arrays.asList(content.split("\\r?\\n")));
 			mLineCount = mLines.size();
 		}
 	}
 	
-	public Parser(String data){
-		this(new File(data));
+	public Parser(String filename){
+		this(new File(filename));
 	}
 	
 	public Parser(File file) {
