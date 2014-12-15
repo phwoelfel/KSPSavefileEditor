@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -60,6 +61,7 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 	private JMenuItem mRCSearchMenu;
 	private JMenuItem mRCCopyMenu;
 	private JMenuItem mRCPasteMenu;
+	private JMenuItem mRCRemoveDuplicatesMenu;
 	
 	
 	/**
@@ -323,6 +325,7 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		mRCSearchMenu = Tools.initializeMenuItem(mRCPopup, "Search", this, Tools.readImage("search.png"));
 		mRCCopyMenu = Tools.initializeMenuItem(mRCPopup, "Copy", this, Tools.readImage("copy.png"));
 		mRCPasteMenu = Tools.initializeMenuItem(mRCPopup, "Paste", this, Tools.readImage("paste.png"));
+		mRCRemoveDuplicatesMenu = Tools.initializeMenuItem(mRCPopup, "Remove Duplicate Entries", this, Tools.readImage("broom.png"));
 		
 		MouseListener popupListener = new PopupListener(mRCPopup);
 		addMouseListener(popupListener);
@@ -468,11 +471,52 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		else if (source == mRCPasteMenu){
 			doPaste();
 		}
+		else if (source == mRCRemoveDuplicatesMenu) {
+			doRemoveDuplicateEntriesFromSelection();
+		}
 	}
 	
+	private void doRemoveDuplicateEntriesFromSelection() {
+		Logger.log("doRemoveDupliacteNodesFromHere()");
+		int yesno = JOptionPane.showConfirmDialog(null, "Do you really want to remove duplicate Entries from within the selected Node?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		if (yesno == JOptionPane.YES_OPTION) {
+			TreePath[] paths = getSelectionPaths();
+			
+			for (int i = 0; i < paths.length; i++) {
+				TreePath path = paths[i];
+				Object selection = path.getLastPathComponent();
+				
+				if (selection instanceof Node) {
+					removeDuplicateEntriesFromNode((Node)selection);
+				}
+			}
+		}
+	}
 	
+	private void removeDuplicateEntriesFromNode(Node parent) {	
+		for (int i = 0; i < parent.getSubNodeCount(); i++) {
+			removeDuplicateEntriesFromNode(parent.getSubNode(i));
+		}
+		
+		if (parent.getEntryCount() > 0) {
+			HashSet<String> unique = new HashSet<>();
+			
+			ArrayList<Entry> entries = parent.getEntries();
+			for (Entry entry : new ArrayList<>(entries)) {
+				if (unique.contains(entry.toString())) {
+					Logger.log("Removing duplicate entry " + entry.toString());
+					parent.removeEntry(entry);
+				} else {
+					Logger.log("Keeping entry " + entry.toString());
+					unique.add(entry.toString());
+				}
+			}
+			
+			mNodeTreeModel.fireTreeStructureChanged(parent);
+		}
+	}
 	
-	private void doDelete() {
+	private void doDelete() {		
 		int yesno = JOptionPane.showConfirmDialog(null, "Do you really want to delete this Node/Entry?", "Are you sure?", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 		if (yesno == JOptionPane.YES_OPTION) {
 			TreePath[] paths = getSelectionPaths();
