@@ -499,10 +499,10 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		}
 		
 		if (parent.getEntryCount() > 0) {
-			HashSet<String> unique = new HashSet<>();
+			HashSet<String> unique = new HashSet<String>();
 			
 			ArrayList<Entry> entries = parent.getEntries();
-			for (Entry entry : new ArrayList<>(entries)) {
+			for (Entry entry : new ArrayList<Entry>(entries)) {
 				if (unique.contains(entry.toString())) {
 					Logger.log("Removing duplicate entry " + entry.toString());
 					parent.removeEntry(entry);
