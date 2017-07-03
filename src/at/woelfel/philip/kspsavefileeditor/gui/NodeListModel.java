@@ -3,10 +3,10 @@ package at.woelfel.philip.kspsavefileeditor.gui;
 import javax.swing.AbstractListModel;
 
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
+import at.woelfel.philip.kspsavefileeditor.backend.TreeBaseNode;
 
-@SuppressWarnings("serial")
-public class NodeListModel extends AbstractListModel {
-
+public class NodeListModel extends AbstractListModel<TreeBaseNode> {
+	private static final long serialVersionUID = 128000L;
 	private Node mNode;
 	
 	private int mMode;
@@ -18,7 +18,7 @@ public class NodeListModel extends AbstractListModel {
 	}
 	
 	@Override
-	public Object getElementAt(int index) {
+	public TreeBaseNode getElementAt(int index) {
 		if(mNode != null){
 			if(NodeListModel.MODE_SUBNODES == mMode){
 				return mNode.getSubNode(index);

@@ -7,8 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
 
-@SuppressWarnings("serial")
 public class AboutWindow extends JFrame {
+	private static final long serialVersionUID = 136000L;
 	public AboutWindow() {
 		setTitle("About");
 		setSize(520, 180);

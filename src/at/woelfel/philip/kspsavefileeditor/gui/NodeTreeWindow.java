@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 public class NodeTreeWindow extends JPanel {
-
+	private static final long serialVersionUID = 123000L;
 	protected JScrollPane mScrollPane;
 	protected NodeTree mNodeTree;
 	

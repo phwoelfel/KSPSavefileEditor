@@ -39,8 +39,9 @@ import at.woelfel.philip.kspsavefileeditor.backend.Settings;
 import at.woelfel.philip.tools.Logger;
 import at.woelfel.philip.tools.Tools;
 
-@SuppressWarnings("serial")
 public class MainGui extends JFrame implements ActionListener, ItemListener, TreeSelectionListener{
+	private static final long serialVersionUID = 132000L;
+
 	/*
 	 * TODO: search & replace:
 	 * 			gefundenen elemente anzeigen und dann mit checkboxen auswaehlen welche ersetzt werden sollen
