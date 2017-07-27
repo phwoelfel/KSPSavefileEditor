@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-@SuppressWarnings("serial")
 public class NodeTableModel extends AbstractTableModel{
+	private static final long serialVersionUID = 152000L;
 
 	private Node mNode;
 	

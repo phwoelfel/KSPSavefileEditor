@@ -8,8 +8,8 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-@SuppressWarnings("serial")
 public class ProgressScreen extends JFrame {
+	private static final long serialVersionUID = 136000L;
 
 	private static JProgressBar mProgressBar;
 	private static JLabel mLabel;

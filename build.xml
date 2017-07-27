@@ -3,8 +3,12 @@
 
 	<property name="project.version" value="0.2.2" />
 	<property name="project.name" value="KSPSaveFileEditor" />
+	<path id="compile-classpath">
+        <pathelement location="bin" />
+        <fileset dir="lib" includes="**/*.jar"/>
+    </path>
 
-	<target name="create_run_jar">
+	<target name="create_run_jar" depends="compile">
 		<jar destfile="${project.name}-${project.version}.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="at.woelfel.philip.kspsavefileeditor.MainClass" />
@@ -15,6 +19,23 @@
 			<zipfileset dir="img" prefix="img" />
 			<zipfileset excludes="META-INF/*.SF" src="lib/philips_tools-0.1.jar" />
 		</jar>
+	</target>
+
+	<target name="compile">
+        <javac 
+            destdir="bin"
+            includeantruntime="false"
+			debug="on"
+			debuglevel="lines,vars,source"
+        >
+			<src path="src" />
+			<compilerarg value="-Xlint:all" />
+			<!--<compilerarg value="-Werror" />-->
+            <!-- maxerrs param must be seperate or space is picked up as a param -->
+            <compilerarg value="-Xmaxerrs" />
+            <compilerarg value="1" />
+            <classpath refid="compile-classpath"/>
+        </javac>
 	</target>
 
 	

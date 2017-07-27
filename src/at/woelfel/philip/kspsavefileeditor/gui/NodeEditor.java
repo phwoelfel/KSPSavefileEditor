@@ -27,10 +27,11 @@ import javax.swing.border.TitledBorder;
 import at.woelfel.philip.kspsavefileeditor.backend.ChangeListener;
 import at.woelfel.philip.kspsavefileeditor.backend.Entry;
 import at.woelfel.philip.kspsavefileeditor.backend.Node;
+import at.woelfel.philip.kspsavefileeditor.backend.TreeBaseNode;
 
-@SuppressWarnings("serial")
+
 public class NodeEditor extends JFrame implements ActionListener {
-
+	private static final long serialVersionUID = 130000L;
 	private Node mNode;
 	private Node mParentNode;
 
@@ -42,10 +43,10 @@ public class NodeEditor extends JFrame implements ActionListener {
 
 	JSplitPane contentPane;
 
-	private JList mSubNodeList;
+	private JList<TreeBaseNode> mSubNodeList;
 	private NodeListModel mSubNodeListModel;
 
-	private JList mEntryList;
+	private JList<TreeBaseNode> mEntryList;
 	private NodeListModel mEntryListModel;
 
 	private JButton mNodeDeleteButton;
@@ -135,7 +136,7 @@ public class NodeEditor extends JFrame implements ActionListener {
 		gbc.weighty = 1;
 		gbc.fill = GridBagConstraints.BOTH;
 		mSubNodeListModel = new NodeListModel(NodeListModel.MODE_SUBNODES);
-		mSubNodeList = new JList(mSubNodeListModel);
+		mSubNodeList = new JList<TreeBaseNode>(mSubNodeListModel);
 		mSubNodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		leftPanel.add(new JScrollPane(mSubNodeList), gbc);
 
@@ -175,7 +176,7 @@ public class NodeEditor extends JFrame implements ActionListener {
 		gbc.weighty = 1;
 		gbc.fill = GridBagConstraints.BOTH;
 		mEntryListModel = new NodeListModel(NodeListModel.MODE_ENTRIES);
-		mEntryList = new JList(mEntryListModel);
+		mEntryList = new JList<TreeBaseNode>(mEntryListModel);
 		mEntryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		rightPanel.add(new JScrollPane(mEntryList), gbc);
 

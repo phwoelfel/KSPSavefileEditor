@@ -40,8 +40,8 @@ import at.woelfel.philip.kspsavefileeditor.backend.TreeBaseNode;
 import at.woelfel.philip.tools.Logger;
 import at.woelfel.philip.tools.Tools;
 
-@SuppressWarnings("serial")
 public class NodeTree extends JTree implements TreeSelectionListener, ChangeListener, ActionListener {
+	private static final long serialVersionUID = 144000L;
 
 	// private JTree mNodeTree;
 	private NodeTreeModel mNodeTreeModel;
@@ -336,24 +336,28 @@ public class NodeTree extends JTree implements TreeSelectionListener, ChangeList
 		getInputMap().put(KeyStroke.getKeyStroke((char)KeyEvent.VK_DELETE), "delete");
 		
 		getActionMap().put("copy", new AbstractAction() {
+			private static final long serialVersionUID = 174000L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				doCopy();
 			}
 		});
 		getActionMap().put("paste", new AbstractAction() {
+			private static final long serialVersionUID = 172000L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				doPaste();
 			}
 		});
 		getActionMap().put("search", new AbstractAction() {
+			private static final long serialVersionUID = 168000L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				doSearch();
 			}
 		});
 		getActionMap().put("delete", new AbstractAction() {
+			private static final long serialVersionUID = 166000L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				doDelete();

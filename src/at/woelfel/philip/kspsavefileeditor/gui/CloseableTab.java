@@ -18,17 +18,19 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 public class CloseableTab extends JPanel {
-
+	private static final long serialVersionUID = 125000L;
 	protected JTabbedPane mTabPane;
 	protected MainGui mMainGui;
 
 	public CloseableTab(JTabbedPane tabPane, MainGui mg) {
+
 		mTabPane = tabPane;
 		mMainGui = mg;
 		setLayout(new FlowLayout(FlowLayout.CENTER, 2, 2));
 		setOpaque(false);
 		
 		JLabel tabLabel = new JLabel() {
+			private static final long serialVersionUID = 125005L;
 			public String getText() {
 				int i = mTabPane.indexOfTabComponent(CloseableTab.this);
 				if (i != -1) {
